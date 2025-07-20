@@ -2,7 +2,11 @@ import flet as ft
 
 
 def consult_item_view(
-    on_voltar=None, on_listar=None, on_listar_vendidos=None, on_marcar_vendido=None
+    on_voltar=None,
+    on_listar=None,
+    on_listar_vendidos=None,
+    on_marcar_vendido=None,
+    on_ver_vendidos=None,
 ):
     search_field = ft.TextField(
         label="Buscar por código, cor, tamanho...",
@@ -33,8 +37,9 @@ def consult_item_view(
     )
 
     def marcar_vendido(e, codigo):
-        print(f"Produto {codigo} marcado como vendido!")
-        # Aqui você pode implementar a lógica real
+        if on_marcar_vendido:
+            on_marcar_vendido(codigo)
+        update_items()  # Atualiza a lista após marcar como vendido
 
     detalhes_dialog = ft.AlertDialog(
         modal=True,
@@ -134,8 +139,9 @@ def consult_item_view(
                                 width=180,
                                 height=40,
                                 style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e, codigo=item["id"]: on_marcar_vendido
-                                and on_marcar_vendido(codigo),
+                                on_click=lambda e, codigo=item["id"]: marcar_vendido(
+                                    e, codigo
+                                ),
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -154,7 +160,7 @@ def consult_item_view(
         )
 
     def update_items():
-        termo = search_field.value.lower()
+        termo = search_field.value.lower() if search_field.value else ""
         min_val = min_value_field.value
         max_val = max_value_field.value
         try:
@@ -166,8 +172,22 @@ def consult_item_view(
         except ValueError:
             max_val = None
 
-        # Busca os itens do banco usando o controller passado
-        items = on_listar(termo) if on_listar else []
+        # Busca todos os itens primeiro
+        items = on_listar() if on_listar else []
+
+        # Aplica filtro de texto se houver
+        if termo:
+            items = [
+                item
+                for item in items
+                if termo in str(item.get("id", "")).lower()
+                or termo in str(item.get("tipo", "")).lower()
+                or termo in str(item.get("cor", "")).lower()
+                or termo in str(item.get("tamanho", "")).lower()
+                or termo in str(item.get("descricao", "")).lower()
+            ]
+
+        # Aplica filtro de preço
         filtered = []
         for item in items:
             preco = item.get("preco", 0)
@@ -175,10 +195,18 @@ def consult_item_view(
                 max_val is None or preco <= max_val
             ):
                 filtered.append(item)
+
         item_column.controls.clear()
-        for item in filtered:
-            item_column.controls.append(item_card(item))
+        if not filtered:
+            item_column.controls.append(
+                ft.Text("Nenhum item encontrado.", color="red", size=18)
+            )
+        else:
+            for item in filtered:
+                item_column.controls.append(item_card(item))
         item_column.update()
+        if item_column.page:
+            item_column.page.update()
 
     voltar_btn = ft.ElevatedButton(
         "Voltar para menu",
@@ -189,14 +217,15 @@ def consult_item_view(
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
         on_click=on_voltar,
     )
+
     ver_vendidos_btn = ft.ElevatedButton(
-        "Ver itens vendidos",
+        "Ver Itens Vendidos",
         bgcolor="#808080",
         color="#ffffff",
         width=180,
         height=40,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-        on_click=on_listar_vendidos,  # Corrigido para usar o nome correto
+        on_click=on_ver_vendidos,
     )
 
     # Inicializa a lista filtrada ao abrir a tela

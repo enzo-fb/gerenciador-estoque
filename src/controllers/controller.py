@@ -10,7 +10,11 @@ TIPOS_PRODUTO = {
     "07": "SAIA",
     "08": "CASACO",
     "09": "COLETE",
-    # Adicione outros códigos e tipos conforme necessário
+    "10": "CAMISA COM MANGA",
+    "11": "JAQUETA",
+    "12": "ROUPA DE CAMA",
+    "13": "ROUPA DE BANHO",
+    "14": "ROUPA ÍNTIMA",
 }
 
 
@@ -31,7 +35,6 @@ def adicionar_produto_controller(produto):
         raise ValueError("O tamanho deve ter no máximo 2 caracteres.")
     # Identifica o tipo automaticamente pelo id
     produto["tipo"] = identificar_tipo_por_id(produto["id"])
-    # Garante que 'codigo' existe e é igual ao 'id'
     produto["codigo"] = produto["id"]
     data.adicionar_produto(produto)
 
@@ -40,33 +43,9 @@ def listar_produtos_controller(filtro=None, vendidos=None):
     return data.listar_produtos(filtro=filtro, vendidos=vendidos)
 
 
-def listar_produtos_vendidos_controller(filtro=None):
-    with data.closing(data.sqlite3.connect(data.DB_PATH)) as conn:
-        c = conn.cursor()
-        query = "SELECT * FROM produtos_vendidos WHERE 1=1"
-        params = []
-        if filtro:
-            query += " AND (id LIKE ? OR codigo LIKE ? OR tipo LIKE ? OR cor LIKE ? OR tamanho LIKE ? OR descricao LIKE ?)"
-            filtro_val = f"%{filtro}%"
-            params += [filtro_val] * 6
-        c.execute(query, params)
-        rows = c.fetchall()
-        return [
-            dict(
-                id=row[0],
-                codigo=row[1],
-                tipo=row[2],
-                quantidade=row[3],
-                cor=row[4],
-                tamanho=row[5],
-                preco=row[6],
-                descricao=row[7],
-                foto=row[8],
-                data_venda=row[9],
-                hora_venda=row[10],
-            )
-            for row in rows
-        ]
+def listar_produtos_vendidos_controller():
+    # Remova qualquer comentário, print ou instrução que escreva no terminal!
+    return data.listar_produtos_vendidos()
 
 
 def remover_produto_controller(codigo):
@@ -75,3 +54,10 @@ def remover_produto_controller(codigo):
 
 def marcar_como_vendido_controller(codigo):
     data.marcar_como_vendido(codigo)
+    # Não coloque prints, chamadas duplicadas, ou comentários de debug aqui!
+    # Remova qualquer chamada duplicada ou print!
+    # Nenhum print ou chamada extra aqui.
+    data.marcar_como_vendido(codigo)
+
+    vendidos = data.listar_produtos_vendidos()
+    print(f"Agora temos {len(vendidos)} itens vendidos no banco")

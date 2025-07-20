@@ -118,25 +118,29 @@ def marcar_como_vendido(codigo):
         c.execute("SELECT * FROM produtos WHERE codigo=?", (codigo,))
         row = c.fetchone()
         if row:
-            # Insere na tabela produtos_vendidos com data e hora separadas
-            c.execute(
-                """
-                INSERT INTO produtos_vendidos (
-                    id, codigo, tipo, quantidade, cor, tamanho, preco, descricao, foto, data_venda, hora_venda
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, date('now'), time('now'))
-                """,
-                (
-                    row[0],
-                    row[1],
-                    row[2],
-                    row[3],
-                    row[4],
-                    row[5],
-                    row[6],
-                    row[7],
-                    row[8],
-                ),
-            )
-            # Marca como vendido na tabela principal
-            c.execute("UPDATE produtos SET vendido=1 WHERE codigo=?", (codigo,))
+            # Verifica se já existe na tabela produtos_vendidos
+            c.execute("SELECT 1 FROM produtos_vendidos WHERE id=?", (row[0],))
+            if not c.fetchone():
+                # Insere na tabela produtos_vendidos com data e hora separadas
+                c.execute(
+                    """
+                    INSERT INTO produtos_vendidos (
+                        id, codigo, tipo, quantidade, cor, tamanho, preco, descricao, foto, data_venda, hora_venda
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, date('now'), time('now'))
+                    """,
+                    (
+                        row[0],
+                        row[1],
+                        row[2],
+                        row[3],
+                        row[4],
+                        row[5],
+                        row[6],
+                        row[7],
+                        row[8],
+                    ),
+                )
+            # Remove da tabela principal (move o produto)
+            c.execute("DELETE FROM produtos WHERE codigo=?", (codigo,))
+            conn.commit()
             conn.commit()

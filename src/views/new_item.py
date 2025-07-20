@@ -2,7 +2,30 @@ import flet as ft
 
 
 def new_item_view(on_voltar=None, on_salvar=None):
-    id_field = ft.TextField(label="Código do produto (8 dígitos)", width=300)
+    TIPOS_PRODUTO = [
+        ("01", "BLAZER"),
+        ("02", "CALÇA"),
+        ("03", "CAMISA"),
+        ("04", "CAMISETA"),
+        ("05", "SHORT"),
+        ("06", "VESTIDO"),
+        ("07", "SAIA"),
+        ("08", "CASACO"),
+        ("09", "COLETE"),
+        ("10", "CAMISA COM MANGA"),
+        ("11", "JAQUETA"),
+        ("12", "ROUPA DE CAMA"),
+        ("13", "ROUPA DE BANHO"),
+        ("14", "ROUPA ÍNTIMA"),
+    ]
+
+    tipo_selector = ft.Dropdown(
+        label="Tipo",
+        width=150,
+        options=[ft.dropdown.Option(k, text=f"{v} ({k})") for k, v in TIPOS_PRODUTO],
+        value="01",
+    )
+    id_field = ft.TextField(label="6 dígitos finais", width=150, max_length=6)
     quantidade_field = ft.TextField(
         label="Quantidade", width=300, keyboard_type=ft.KeyboardType.NUMBER
     )
@@ -52,7 +75,7 @@ def new_item_view(on_voltar=None, on_salvar=None):
         on_click=lambda e: on_salvar
         and on_salvar(
             {
-                "id": id_field.value,
+                "id": gerar_id_completo(),
                 "quantidade": quantidade_field.value,
                 "cor": cor_field.value,
                 "tamanho": tamanho_field.value,
@@ -71,6 +94,10 @@ def new_item_view(on_voltar=None, on_salvar=None):
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
         on_click=on_voltar,
     )
+
+    def gerar_id_completo():
+        return (tipo_selector.value or "") + (id_field.value or "")
+
     layout = ft.SafeArea(
         ft.Container(
             ft.Column(
@@ -78,7 +105,14 @@ def new_item_view(on_voltar=None, on_salvar=None):
                     ft.Text(
                         "Adicionar Novo Item", size=28, weight="bold", color="#000000"
                     ),
-                    id_field,
+                    ft.Row(
+                        [
+                            tipo_selector,
+                            id_field,
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=10,
+                    ),
                     quantidade_field,
                     cor_field,
                     tamanho_field,

@@ -20,10 +20,12 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
     def remover_item(e, codigo):
         if on_remover:
             on_remover(codigo)
+        # Aguarda a operação e remove visualmente o card imediatamente
         update_items()
 
     def item_card(item):
         return ft.Container(
+            key=item.get("id", ""),  # chave única para facilitar atualização
             content=ft.Row(
                 [
                     ft.Container(
@@ -92,35 +94,28 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         )
 
     def update_items():
-        termo = search_field.value.lower()
-        # Busca todos os itens do banco (não só pelo termo)
+        termo = search_field.value.lower() if search_field.value else ""
         items = on_listar() if on_listar else []
-        # DEBUG: Mostra o que está vindo do banco
-        print("Itens do banco:", items)
-        if not items:
-            item_column.controls.clear()
-            item_column.controls.append(
-                ft.Text("Nenhum item encontrado no estoque.", color="red", size=18)
-            )
-            item_column.update()
-            if item_column.page:
-                item_column.page.update()
-            return
-        filtered = []
-        for item in items:
-            if (
-                termo in str(item.get("id", "")).lower()
+
+        # Aplica filtro de texto apenas se houver um termo
+        if termo:
+            filtered = [
+                item
+                for item in items
+                if termo in str(item.get("id", "")).lower()
                 or termo in str(item.get("tipo", "")).lower()
                 or termo in str(item.get("cor", "")).lower()
                 or termo in str(item.get("tamanho", "")).lower()
                 or termo in str(item.get("descricao", "")).lower()
-            ):
-                filtered.append(item)
-        print("Itens filtrados:", filtered)
+            ]
+        else:
+            # Se não houver termo, mostra todos os itens
+            filtered = items
+
         item_column.controls.clear()
         if not filtered:
             item_column.controls.append(
-                ft.Text("Nenhum item corresponde à busca.", color="red", size=18)
+                ft.Text("Nenhum item encontrado.", color="red", size=18)
             )
         else:
             for item in filtered:
