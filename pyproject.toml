@@ -1,7 +1,7 @@
 [project]
-name = "gerenciador-estoque"
+name = "Estoque Abby's Brechó"
 version = "0.1.0"
-description = ""
+description = "Aplicativo para gerenciamento de estoque de vestimentas"
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [
@@ -18,13 +18,14 @@ org = "com.mycompany"
 
 # project display name that is used as an app title on Android and iOS home screens,
 # shown in window titles and about app dialogs on desktop.
-product = "gerenciador-estoque"
+product = "Estoque Abby's Brechó"  # Nome do APK/app
 
 # company name to display in about app dialogs
 company = "Flet"
 
 # copyright text to display in about app dialogs
 copyright = "Copyright (C) 2025 by Flet"
+icon = "assets/logo.png"  # Caminho para o arquivo da logo (PNG recomendado)
 
 [tool.flet.app]
 path = "src"
