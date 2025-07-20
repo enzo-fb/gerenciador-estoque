@@ -59,7 +59,7 @@ def new_item_view(on_voltar=None):
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
         on_click=on_voltar,
     )
-    return ft.SafeArea(
+    layout = ft.SafeArea(
         ft.Container(
             ft.Column(
                 [
@@ -88,5 +88,4 @@ def new_item_view(on_voltar=None):
         ),
         expand=True,
     )
-    # file_picker deve ser adicionado fora do layout principal se necessário
-    # return [SafeArea(...), file_picker] se estiver usando controls.append()
+    return ft.Stack([layout, file_picker])
