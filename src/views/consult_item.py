@@ -1,7 +1,9 @@
 import flet as ft
 
 
-def consult_item_view(on_voltar=None, on_ver_vendidos=None):
+def consult_item_view(
+    on_voltar=None, on_listar=None, on_listar_vendidos=None, on_marcar_vendido=None
+):
     search_field = ft.TextField(
         label="Buscar por código, cor, tamanho...",
         width=300,
@@ -20,30 +22,6 @@ def consult_item_view(on_voltar=None, on_ver_vendidos=None):
         keyboard_type=ft.KeyboardType.NUMBER,
         on_change=lambda e: update_items(),
     )
-
-    # Exemplo de dados estáticos (adicione o campo 'foto' se desejar)
-    items = [
-        {
-            "codigo": "001",
-            "nome": "Produto A",
-            "quantidade": 10,
-            "cor": "Azul",
-            "tamanho": "M",
-            "descricao": "Produto de alta qualidade.",
-            "preco": 100,
-            "foto": None,  # Substitua por caminho da imagem se houver
-        },
-        {
-            "codigo": "002",
-            "nome": "Produto B",
-            "quantidade": 5,
-            "cor": "Vermelho",
-            "tamanho": "G",
-            "descricao": "Produto resistente e durável.",
-            "preco": 200,
-            "foto": None,
-        },
-    ]
 
     item_column = ft.Column(
         [],
@@ -82,22 +60,26 @@ def consult_item_view(on_voltar=None, on_ver_vendidos=None):
         if not hasattr(page, "dialog") or page.dialog != detalhes_dialog:
             page.dialog = detalhes_dialog
         detalhes_dialog.title = ft.Text(
-            f"Detalhes do Produto {item['codigo']}", weight="bold"
+            f"Detalhes do Produto {item.get('id', '')}", weight="bold"
         )
         detalhes_dialog.content.controls = [
             ft.Image(
-                src=item["foto"] if item["foto"] else "https://via.placeholder.com/200",
+                src=(
+                    item.get("foto")
+                    if item.get("foto")
+                    else "https://via.placeholder.com/200"
+                ),
                 width=200,
                 height=200,
                 fit=ft.ImageFit.CONTAIN,
             ),
-            ft.Text(f"Código: {item['codigo']}", weight="bold"),
-            ft.Text(f"Nome: {item['nome']}"),
-            ft.Text(f"Cor: {item['cor']}"),
-            ft.Text(f"Tamanho: {item['tamanho']}"),
-            ft.Text(f"Quantidade: {item['quantidade']}"),
+            ft.Text(f"Código: {item.get('id', '')}", weight="bold"),
+            ft.Text(f"Tipo: {item.get('tipo', '')}"),  # Garante exibição do tipo
+            ft.Text(f"Cor: {item.get('cor', '')}"),
+            ft.Text(f"Tamanho: {item.get('tamanho', '')}"),
+            ft.Text(f"Quantidade: {item.get('quantidade', '')}"),
             ft.Text(f"Preço: R$ {item.get('preco', 0):.2f}"),
-            ft.Text(f"Descrição: {item['descricao']}"),
+            ft.Text(f"Descrição: {item.get('descricao', '')}"),
         ]
         detalhes_dialog.open = True
         page.update()
@@ -129,14 +111,18 @@ def consult_item_view(on_voltar=None, on_ver_vendidos=None):
                     ft.Column(
                         [
                             ft.Text(
-                                f"Código: {item['codigo']}", weight="bold", size=16
+                                f"Código: {item.get('id', '')}",
+                                weight="bold",
+                                size=16,
                             ),
-                            ft.Text(f"Nome: {item['nome']}", size=15),
-                            ft.Text(f"Cor: {item['cor']}", size=15),
-                            ft.Text(f"Tamanho: {item['tamanho']}", size=15),
-                            ft.Text(f"Qtd: {item['quantidade']}", size=15),
                             ft.Text(
-                                f"Descrição: {item['descricao']}",
+                                f"Tipo: {item.get('tipo', '')}", size=15
+                            ),  # Garante exibição do tipo
+                            ft.Text(f"Cor: {item.get('cor', '')}", size=15),
+                            ft.Text(f"Tamanho: {item.get('tamanho', '')}", size=15),
+                            ft.Text(f"Qtd: {item.get('quantidade', '')}", size=15),
+                            ft.Text(
+                                f"Descrição: {item.get('descricao', '')}",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
@@ -148,9 +134,8 @@ def consult_item_view(on_voltar=None, on_ver_vendidos=None):
                                 width=180,
                                 height=40,
                                 style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e, codigo=item[
-                                    "codigo"
-                                ]: marcar_vendido(e, codigo),
+                                on_click=lambda e, codigo=item["id"]: on_marcar_vendido
+                                and on_marcar_vendido(codigo),
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -181,20 +166,15 @@ def consult_item_view(on_voltar=None, on_ver_vendidos=None):
         except ValueError:
             max_val = None
 
+        # Busca os itens do banco usando o controller passado
+        items = on_listar(termo) if on_listar else []
         filtered = []
         for item in items:
-            if (
-                termo in item["codigo"].lower()
-                or termo in item["nome"].lower()
-                or termo in item["cor"].lower()
-                or termo in item["tamanho"].lower()
-                or termo in item["descricao"].lower()
+            preco = item.get("preco", 0)
+            if (min_val is None or preco >= min_val) and (
+                max_val is None or preco <= max_val
             ):
-                preco = item.get("preco", 0)
-                if (min_val is None or preco >= min_val) and (
-                    max_val is None or preco <= max_val
-                ):
-                    filtered.append(item)
+                filtered.append(item)
         item_column.controls.clear()
         for item in filtered:
             item_column.controls.append(item_card(item))
@@ -216,7 +196,7 @@ def consult_item_view(on_voltar=None, on_ver_vendidos=None):
         width=180,
         height=40,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-        on_click=on_ver_vendidos,
+        on_click=on_listar_vendidos,  # Corrigido para usar o nome correto
     )
 
     # Inicializa a lista filtrada ao abrir a tela

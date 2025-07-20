@@ -1,32 +1,12 @@
 import flet as ft
 
 
-def remove_item_view(on_voltar=None):
+def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
     search_field = ft.TextField(
-        label="Buscar por código, nome, cor...",
+        label="Buscar por código, cor, tamanho...",
         width=300,
         prefix_icon=ft.Icons.SEARCH,
     )
-
-    # Exemplo de dados estáticos (substitua depois por dados reais)
-    items = [
-        {
-            "codigo": "001",
-            "nome": "Produto A",
-            "cor": "Azul",
-            "tamanho": "M",
-            "descricao": "Produto de alta qualidade.",
-            "foto": None,  # Adicione o campo foto
-        },
-        {
-            "codigo": "002",
-            "nome": "Produto B",
-            "cor": "Vermelho",
-            "tamanho": "G",
-            "descricao": "Produto resistente e durável.",
-            "foto": None,
-        },
-    ]
 
     item_column = ft.Column(
         [],
@@ -38,8 +18,9 @@ def remove_item_view(on_voltar=None):
     )
 
     def remover_item(e, codigo):
-        print(f"Remover produto {codigo}")
-        # Aqui você pode implementar a lógica real
+        if on_remover:
+            on_remover(codigo)
+        update_items()
 
     def item_card(item):
         return ft.Container(
@@ -48,7 +29,7 @@ def remove_item_view(on_voltar=None):
                     ft.Container(
                         ft.Image(
                             src=(
-                                item["foto"]
+                                item.get("foto")
                                 if item.get("foto")
                                 else "https://via.placeholder.com/100"
                             ),
@@ -66,16 +47,21 @@ def remove_item_view(on_voltar=None):
                     ft.Column(
                         [
                             ft.Text(
-                                f"Código: {item['codigo']}", weight="bold", size=16
+                                f"Código: {item.get('id', '')}", weight="bold", size=16
                             ),
-                            ft.Text(f"Nome: {item['nome']}", size=15),
-                            ft.Text(f"Cor: {item['cor']}", size=15),
-                            ft.Text(f"Tamanho: {item['tamanho']}", size=15),
+                            ft.Text(f"Tipo: {item.get('tipo', '')}", size=15),
+                            ft.Text(f"Cor: {item.get('cor', '')}", size=15),
+                            ft.Text(f"Tamanho: {item.get('tamanho', '')}", size=15),
+                            ft.Text(f"Qtd: {item.get('quantidade', '')}", size=15),
                             ft.Text(
-                                f"Descrição: {item['descricao']}",
+                                f"Descrição: {item.get('descricao', '')}",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
+                            ),
+                            ft.Text(
+                                f"Preço: R$ {float(item.get('preco', 0) or 0):.2f}",
+                                size=14,
                             ),
                             ft.ElevatedButton(
                                 "Remover",
@@ -84,9 +70,9 @@ def remove_item_view(on_voltar=None):
                                 width=180,
                                 height=40,
                                 style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e, codigo=item["codigo"]: remover_item(
-                                    e, codigo
-                                ),
+                                on_click=lambda e, codigo=item.get(
+                                    "codigo", item.get("id", "")
+                                ): remover_item(e, codigo),
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -107,20 +93,41 @@ def remove_item_view(on_voltar=None):
 
     def update_items():
         termo = search_field.value.lower()
+        # Busca todos os itens do banco (não só pelo termo)
+        items = on_listar() if on_listar else []
+        # DEBUG: Mostra o que está vindo do banco
+        print("Itens do banco:", items)
+        if not items:
+            item_column.controls.clear()
+            item_column.controls.append(
+                ft.Text("Nenhum item encontrado no estoque.", color="red", size=18)
+            )
+            item_column.update()
+            if item_column.page:
+                item_column.page.update()
+            return
         filtered = []
         for item in items:
             if (
-                termo in item["codigo"].lower()
-                or termo in item["nome"].lower()
-                or termo in item["cor"].lower()
-                or termo in item["tamanho"].lower()
-                or termo in item["descricao"].lower()
+                termo in str(item.get("id", "")).lower()
+                or termo in str(item.get("tipo", "")).lower()
+                or termo in str(item.get("cor", "")).lower()
+                or termo in str(item.get("tamanho", "")).lower()
+                or termo in str(item.get("descricao", "")).lower()
             ):
                 filtered.append(item)
+        print("Itens filtrados:", filtered)
         item_column.controls.clear()
-        for item in filtered:
-            item_column.controls.append(item_card(item))
+        if not filtered:
+            item_column.controls.append(
+                ft.Text("Nenhum item corresponde à busca.", color="red", size=18)
+            )
+        else:
+            for item in filtered:
+                item_column.controls.append(item_card(item))
         item_column.update()
+        if item_column.page:
+            item_column.page.update()
 
     search_field.on_change = lambda e: update_items()
 

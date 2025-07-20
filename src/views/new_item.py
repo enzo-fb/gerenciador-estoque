@@ -1,8 +1,8 @@
 import flet as ft
 
 
-def new_item_view(on_voltar=None):
-    nome_field = ft.TextField(label="Código do produto", width=300)
+def new_item_view(on_voltar=None, on_salvar=None):
+    id_field = ft.TextField(label="Código do produto (8 dígitos)", width=300)
     quantidade_field = ft.TextField(
         label="Quantidade", width=300, keyboard_type=ft.KeyboardType.NUMBER
     )
@@ -49,6 +49,18 @@ def new_item_view(on_voltar=None):
         width=300,
         height=50,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
+        on_click=lambda e: on_salvar
+        and on_salvar(
+            {
+                "id": id_field.value,
+                "quantidade": quantidade_field.value,
+                "cor": cor_field.value,
+                "tamanho": tamanho_field.value,
+                "preco": preco_field.value,
+                "descricao": descricao_field.value,
+                "foto": foto_path.value if foto_path.value else None,
+            }
+        ),
     )
     voltar_btn = ft.ElevatedButton(
         "Voltar para menu",
@@ -66,7 +78,7 @@ def new_item_view(on_voltar=None):
                     ft.Text(
                         "Adicionar Novo Item", size=28, weight="bold", color="#000000"
                     ),
-                    nome_field,
+                    id_field,
                     quantidade_field,
                     cor_field,
                     tamanho_field,
