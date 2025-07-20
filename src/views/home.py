@@ -1,7 +1,9 @@
 import flet as ft
 
 
-def home_view(on_add_item=None, on_remove_item=None, on_consult_item=None):
+def home_view(
+    on_add_item=None, on_remove_item=None, on_consult_item=None, on_sold_items=None
+):
     logo = ft.Image(src="logo1.png", width=300, height=300)
     btn_width = 300
     btn_text_size = 20
@@ -32,6 +34,17 @@ def home_view(on_add_item=None, on_remove_item=None, on_consult_item=None):
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=btn_text_size)),
         on_click=on_consult_item,
     )
+    btn4 = ft.ElevatedButton(
+        "Ver Itens Vendidos",
+        bgcolor="#808080",
+        color="#ffffff",
+        width=btn_width,
+        height=50,
+        style=ft.ButtonStyle(text_style=ft.TextStyle(size=btn_text_size)),
+        on_click=(
+            on_sold_items if on_sold_items else None
+        ),  # Corrigido: não use lambda, passe a função diretamente
+    )
     return ft.SafeArea(
         ft.Container(
             ft.Column(
@@ -51,6 +64,7 @@ def home_view(on_add_item=None, on_remove_item=None, on_consult_item=None):
                     btn1,
                     btn3,
                     btn2,
+                    btn4,
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,

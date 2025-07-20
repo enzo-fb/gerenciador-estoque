@@ -3,6 +3,8 @@ from views.home import home_view
 from views.new_item import new_item_view
 from views.remove_item import remove_item_view
 from views.consult_item import consult_item_view
+from views.sold_item import sold_item_view
+from views.sucess import success_view
 from controllers.controller import (
     inicializar_banco,
     adicionar_produto_controller,
@@ -22,6 +24,23 @@ def main(page: ft.Page):
             new_item_view(
                 on_voltar=go_to_menu,
                 on_salvar=adicionar_produto_controller,
+                on_sucesso=show_success_screen,
+            )
+        )
+        page.update()
+
+    def show_success_screen():
+        def voltar_para_add(e=None):
+            go_to_new_item()
+
+        def voltar_menu(e=None):
+            go_to_menu()
+
+        page.controls.clear()
+        page.controls.append(
+            success_view(
+                on_add_another=voltar_para_add,
+                on_voltar_menu=voltar_menu,
             )
         )
         page.update()
@@ -32,7 +51,17 @@ def main(page: ft.Page):
             remove_item_view(
                 on_voltar=go_to_menu,
                 on_remover=remover_produto_controller,
-                on_listar=lambda termo=None: listar_produtos_controller(),  # Use o controller para buscar do banco
+                on_listar=lambda termo=None: listar_produtos_controller(),
+            )
+        )
+        page.update()
+
+    def go_to_sold_items(e=None):
+        page.controls.clear()
+        page.controls.append(
+            sold_item_view(
+                on_voltar=go_to_menu,
+                on_listar_vendidos=listar_produtos_vendidos_controller,
             )
         )
         page.update()
@@ -56,6 +85,7 @@ def main(page: ft.Page):
                 on_add_item=go_to_new_item,
                 on_remove_item=go_to_remove_item,
                 on_consult_item=go_to_consult_item,
+                on_sold_items=go_to_sold_items,  # Certifique-se de passar a função aqui
             )
         )
         page.update()

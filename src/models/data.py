@@ -104,6 +104,31 @@ def listar_produtos(filtro=None, vendidos=None):
         ]
 
 
+def listar_produtos_vendidos():
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        c = conn.cursor()
+        c.execute(
+            "SELECT * FROM produtos_vendidos ORDER BY data_venda DESC, hora_venda DESC"
+        )
+        rows = c.fetchall()
+        return [
+            dict(
+                id=row[0],
+                codigo=row[1],
+                tipo=row[2],
+                quantidade=row[3],
+                cor=row[4],
+                tamanho=row[5],
+                preco=row[6],
+                descricao=row[7],
+                foto=row[8],
+                data_venda=row[9],
+                hora_venda=row[10],
+            )
+            for row in rows
+        ]
+
+
 def remover_produto_por_codigo(codigo):
     with closing(sqlite3.connect(DB_PATH)) as conn:
         c = conn.cursor()

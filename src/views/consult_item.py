@@ -212,20 +212,10 @@ def consult_item_view(
         "Voltar para menu",
         bgcolor="#6495ED",
         color="#ffffff",
-        width=180,
+        width=300,
         height=40,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
         on_click=on_voltar,
-    )
-
-    ver_vendidos_btn = ft.ElevatedButton(
-        "Ver Itens Vendidos",
-        bgcolor="#808080",
-        color="#ffffff",
-        width=180,
-        height=40,
-        style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-        on_click=on_ver_vendidos,
     )
 
     # Inicializa a lista filtrada ao abrir a tela
@@ -247,7 +237,7 @@ def consult_item_view(
                     ),
                     item_column,
                     ft.Row(
-                        [voltar_btn, ver_vendidos_btn],
+                        [voltar_btn],
                         alignment=ft.MainAxisAlignment.CENTER,
                         spacing=20,
                     ),
