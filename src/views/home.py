@@ -1,7 +1,7 @@
 import flet as ft
 
 
-def home_view():
+def home_view(on_add_item=None):
     logo = ft.Image(src="logo1.png", width=300, height=300)
     btn_width = 300
     btn_text_size = 20
@@ -12,6 +12,7 @@ def home_view():
         width=btn_width,
         height=50,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=btn_text_size)),
+        on_click=on_add_item,  # handler para navegação
     )
     btn2 = ft.ElevatedButton(
         "Remover item",
