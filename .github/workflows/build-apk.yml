@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar Python
         uses: actions/setup-python@v4
@@ -26,10 +26,10 @@ jobs:
 
       - name: Build APK com Flet
         run: |
-          flet build apk 
+          flet build apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: apk
-          path: ./build/apk/*.apk  
+          path: build/apk/*.apk
