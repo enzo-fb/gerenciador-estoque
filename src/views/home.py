@@ -5,7 +5,7 @@ def home_view(
     on_add_item=None, on_remove_item=None, on_consult_item=None, on_sold_items=None
 ):
     # Troque o nome do arquivo da logo conforme sua imagem personalizada
-    logo = ft.Image(src="logo1.png", width=300, height=300)
+    logo = ft.Image(src="splash_android.png", width=300, height=300)
     btn_width = 300
     btn_text_size = 20
     btn1 = ft.ElevatedButton(

@@ -25,7 +25,7 @@ company = "Flet"
 
 # copyright text to display in about app dialogs
 copyright = "Copyright (C) 2025 by Flet"
-icon = "logo.png"  
+icon = "splash_android.png"  
 
 [tool.flet.app]
 path = "src"
