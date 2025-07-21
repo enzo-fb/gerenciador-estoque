@@ -61,8 +61,8 @@ def home_view(
                         padding=ft.padding.only(top=10, bottom=100),
                     ),
                     btn1,  # Adicionar novo item
-                    btn2,  # Remover item
-                    btn3,  # Consultar item
+                    btn3,  # Remover item
+                    btn2,  # Consultar item
                     btn4,  # Ver Itens Vendidos
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,

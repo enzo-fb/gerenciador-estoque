@@ -1,6 +1,7 @@
 import flet as ft
 import base64
-from models.data import salvar_blob_em_arquivo
+
+# from models.data import salvar_blob_em_arquivo # Comentei/removi se não estiver em uso para src_base64
 
 
 def consult_item_view(
@@ -8,6 +9,20 @@ def consult_item_view(
     on_listar=None,
     on_marcar_vendido=None,
 ):
+    # Diálogo de detalhes (declarado aqui para ser acessível)
+    detalhes_dialog = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Detalhes do Produto", weight="bold"),
+        content=ft.Column([], tight=True, spacing=10),
+        actions=[
+            ft.TextButton(
+                "Fechar",
+                on_click=lambda e: fechar_dialog(e),
+            )
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
+
     search_field = ft.TextField(
         label="Buscar por código, cor, tamanho...",
         width=300,
@@ -41,27 +56,14 @@ def consult_item_view(
             on_marcar_vendido(codigo)
         update_items()  # Atualiza a lista após marcar como vendido
 
-    detalhes_dialog = ft.AlertDialog(
-        modal=True,
-        title=ft.Text("Detalhes do Produto", weight="bold"),
-        content=ft.Column([], tight=True, spacing=10),
-        actions=[
-            ft.TextButton(
-                "Fechar",
-                on_click=lambda e: fechar_dialog(e),
-            )
-        ],
-        actions_alignment=ft.MainAxisAlignment.END,
-    )
-
     def fechar_dialog(e):
-        page = e.page
+        page_instance = e.page  # Obtém a instância da página do evento
         detalhes_dialog.open = False
-        page.update()
+        page_instance.update()
 
-    def mostrar_detalhes(item):
-        # Use item_column.page para obter a página
-        page = item_column.page if hasattr(item_column, "page") else None
+    def mostrar_detalhes(e, item):  # Adicione 'e' como primeiro argumento
+        page_instance = e.page  # Obtém a instância da página do evento
+
         foto = item.get("foto")
         foto_ctrl = None
         if isinstance(foto, bytes) and foto:
@@ -73,8 +75,9 @@ def consult_item_view(
                 fit=ft.ImageFit.CONTAIN,
             )
         elif foto and not str(foto).startswith("http"):
+            # Removido 'file://' conforme discutido
             foto_ctrl = ft.Image(
-                src=f"file://{foto}",
+                src=foto,
                 width=300,
                 height=300,
                 fit=ft.ImageFit.CONTAIN,
@@ -86,6 +89,7 @@ def consult_item_view(
                 height=300,
                 fit=ft.ImageFit.CONTAIN,
             )
+
         detalhes_dialog.title = ft.Text(
             f"Detalhes do Produto {item.get('id', '')}", weight="bold"
         )
@@ -100,9 +104,11 @@ def consult_item_view(
             ft.Text(f"Descrição: {item.get('descricao', '')}"),
         ]
         detalhes_dialog.open = True
-        if page:
-            page.dialog = detalhes_dialog
-            page.update()
+
+        # Mude page.dialog para page_instance.dialog
+        # Ou adicione detalhes_dialog ao page_instance.overlay, o que é mais comum
+        page_instance.dialog = detalhes_dialog
+        page_instance.update()
 
     def item_card(item):
         foto = item.get("foto")
@@ -113,9 +119,8 @@ def consult_item_view(
                 src_base64=foto_base64, width=100, height=100, fit=ft.ImageFit.COVER
             )
         elif foto and not str(foto).startswith("http"):
-            foto_ctrl = ft.Image(
-                src=f"file://{foto}", width=100, height=100, fit=ft.ImageFit.COVER
-            )
+            # Removido 'file://' conforme discutido
+            foto_ctrl = ft.Image(src=foto, width=100, height=100, fit=ft.ImageFit.COVER)
         else:
             foto_ctrl = ft.Image(
                 src=foto or "https://via.placeholder.com/100",
@@ -149,7 +154,7 @@ def consult_item_view(
                                 f"Tipo: {item.get('tipo', '')}",
                                 size=15,
                                 color="#000000",
-                            ),  # Garante exibição do tipo
+                            ),
                             ft.Text(
                                 f"Cor: {item.get('cor', '')}",
                                 size=15,
@@ -172,6 +177,11 @@ def consult_item_view(
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
                             ),
+                            ft.Text(
+                                f"Preço: R$ {float(item.get('preco', 0) or 0):.2f}",
+                                size=14,
+                                color="#000000",
+                            ),
                             ft.ElevatedButton(
                                 "Marcar como vendido",
                                 bgcolor="#228B22",
@@ -179,9 +189,11 @@ def consult_item_view(
                                 width=180,
                                 height=40,
                                 style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e, codigo=item.get(
+                                on_click=lambda e_btn, codigo=item.get(  # Use um nome diferente para 'e' do lambda
                                     "id", ""
-                                ): marcar_vendido(e, codigo),
+                                ): marcar_vendido(
+                                    e_btn, codigo
+                                ),
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -192,11 +204,13 @@ def consult_item_view(
             ),
             padding=16,
             margin=ft.margin.symmetric(vertical=8),
-            bgcolor="#f5f5f5",  # Alterado para cinza claro
+            bgcolor="#f5f5f5",
             border_radius=12,
             shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
             width=400,
-            on_click=lambda e: mostrar_detalhes(item),
+            on_click=lambda e_click: mostrar_detalhes(
+                e_click, item
+            ),  # Passe o evento e o item
         )
 
     def update_items():
@@ -212,10 +226,8 @@ def consult_item_view(
         except ValueError:
             max_val = None
 
-        # Busca todos os itens primeiro
         items = on_listar(termo) if on_listar else []
 
-        # Aplica filtro de preço
         filtered = []
         for item in items:
             preco = item.get("preco", 0)
@@ -232,9 +244,8 @@ def consult_item_view(
         else:
             for item in filtered:
                 item_column.controls.append(item_card(item))
+
         item_column.update()
-        if item_column.page:
-            item_column.page.update()
 
     voltar_btn = ft.ElevatedButton(
         "Voltar para menu",
@@ -246,11 +257,7 @@ def consult_item_view(
         on_click=on_voltar,
     )
 
-    # Inicializa a lista filtrada ao abrir a tela
-    def on_page_load(e):
-        update_items()
-
-    view = ft.SafeArea(
+    view_content = ft.SafeArea(
         ft.Container(
             ft.Column(
                 [
@@ -273,25 +280,23 @@ def consult_item_view(
                 alignment=ft.MainAxisAlignment.START,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=20,
-                expand=True,  # Adicionado para expandir a coluna
+                expand=True,
             ),
             alignment=ft.alignment.top_center,
             bgcolor="#feffff",
-            expand=True,  # Adicionado para expandir o container
+            expand=True,
             padding=20,
         ),
-        expand=True,  # Adicionado para expandir o SafeArea
+        expand=True,
     )
 
-    # Atualiza a lista ao carregar a página
-    view.on_mount = on_page_load
-
-    # Adiciona o dialog de detalhes à página
+    # Função a ser chamada quando a view for montada e exibida.
     def on_view_mount(e):
         page = e.page
-        page.dialog = detalhes_dialog
-        update_items()
+        page.dialog = detalhes_dialog  # Garante que o dialog seja adicionado à página
+        update_items()  # Carrega os itens na inicialização
 
-    view.on_mount = on_view_mount
+    view_content.on_mount = on_view_mount
 
-    return view
+    # Retorna a view e a função de atualização para o controle externo
+    return view_content, update_items

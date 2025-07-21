@@ -182,4 +182,7 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
 
     container.on_mount = on_mount
 
-    return ft.SafeArea(container, expand=True)  # Adicionado expand=True no SafeArea
+    return (
+        ft.SafeArea(container, expand=True),
+        update_items,
+    )  # Adicionado expand=True no SafeArea

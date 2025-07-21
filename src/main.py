@@ -47,35 +47,40 @@ def main(page: ft.Page):
 
     def go_to_remove_item(e=None):
         page.controls.clear()
-        page.controls.append(
-            remove_item_view(
-                on_voltar=go_to_menu,
-                on_remover=remover_produto_controller,
-                on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
-            )
+
+        # Desempacota a view e a função, exatamente como no seu exemplo
+        view_content, update_function = remove_item_view(
+            on_voltar=go_to_menu,
+            on_remover=remover_produto_controller,
+            on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
         )
+
+        page.controls.append(view_content)
         page.update()
+
+        # Chama a função de atualização após a página ser renderizada
+        update_function()
 
     def go_to_sold_items(e=None):
         page.controls.clear()
-        page.controls.append(
-            sold_item_view(
-                on_voltar=go_to_menu,
-                on_listar_vendidos=listar_produtos_vendidos_controller,
-            )
+        view_content, update_function = sold_item_view(
+            on_voltar=go_to_menu,
+            on_listar_vendidos=listar_produtos_vendidos_controller,
         )
+        page.controls.append(view_content)
         page.update()
+        update_function()
 
     def go_to_consult_item(e=None):
         page.controls.clear()
-        page.controls.append(
-            consult_item_view(
-                on_voltar=go_to_menu,
-                on_marcar_vendido=marcar_como_vendido_controller,
-                on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
-            )
+        consult_view_content, update_consult_func = consult_item_view(
+            on_voltar=go_to_menu,
+            on_marcar_vendido=marcar_como_vendido_controller,
+            on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
         )
+        page.controls.append(consult_view_content)
         page.update()
+        update_consult_func()
 
     def go_to_menu(e=None):
         page.controls.clear()
