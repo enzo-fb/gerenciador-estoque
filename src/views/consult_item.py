@@ -1,4 +1,5 @@
 import flet as ft
+from models.data import salvar_blob_em_arquivo
 
 
 def consult_item_view(
@@ -58,22 +59,33 @@ def consult_item_view(
         page.update()
 
     def mostrar_detalhes(item):
-        # Garante que o dialog está na página antes de abrir
-        page = item_column.page
-        if not hasattr(page, "dialog") or page.dialog != detalhes_dialog:
-            page.dialog = detalhes_dialog
+        # Use item_column.page para obter a página
+        page = item_column.page if hasattr(item_column, "page") else None
+        foto = item.get("foto")
+        foto_src = None
+        if isinstance(foto, bytes):
+            temp_path = salvar_blob_em_arquivo(foto)
+            foto_src = (
+                f"file://{temp_path}"
+                if temp_path
+                else "https://via.placeholder.com/200"
+            )
+        elif foto and not str(foto).startswith("http"):
+            foto_src = f"file://{foto}"
+        else:
+            foto_src = foto or "https://via.placeholder.com/200"
         detalhes_dialog.title = ft.Text(
             f"Detalhes do Produto {item.get('id', '')}", weight="bold"
         )
         detalhes_dialog.content.controls = [
             ft.Image(
-                src=item.get("foto") or "https://via.placeholder.com/200",
+                src=foto_src,
                 width=200,
                 height=200,
                 fit=ft.ImageFit.CONTAIN,
             ),
             ft.Text(f"Código: {item.get('id', '')}", weight="bold"),
-            ft.Text(f"Tipo: {item.get('tipo', '')}"),  # Garante exibição do tipo
+            ft.Text(f"Tipo: {item.get('tipo', '')}"),
             ft.Text(f"Cor: {item.get('cor', '')}"),
             ft.Text(f"Tamanho: {item.get('tamanho', '')}"),
             ft.Text(f"Quantidade: {item.get('quantidade', '')}"),
@@ -81,16 +93,31 @@ def consult_item_view(
             ft.Text(f"Descrição: {item.get('descricao', '')}"),
         ]
         detalhes_dialog.open = True
-        page.update()
+        if page:
+            page.dialog = detalhes_dialog
+            page.update()
 
     def item_card(item):
+        foto = item.get("foto")
+        foto_src = None
+        if isinstance(foto, bytes):
+            temp_path = salvar_blob_em_arquivo(foto)
+            foto_src = (
+                f"file://{temp_path}"
+                if temp_path
+                else "https://via.placeholder.com/100"
+            )
+        elif foto and not str(foto).startswith("http"):
+            foto_src = f"file://{foto}"
+        else:
+            foto_src = foto or "https://via.placeholder.com/100"
         return ft.Container(
             content=ft.Row(
                 [
                     # Foto do produto (imagem ou placeholder)
                     ft.Container(
                         ft.Image(
-                            src=item.get("foto") or "https://via.placeholder.com/100",
+                            src=foto_src,
                             width=100,
                             height=100,
                             fit=ft.ImageFit.COVER,
@@ -158,7 +185,7 @@ def consult_item_view(
             ),
             padding=16,
             margin=ft.margin.symmetric(vertical=8),
-            bgcolor="#ffffff",
+            bgcolor="#f5f5f5",  # Alterado para cinza claro
             border_radius=12,
             shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
             width=400,
@@ -251,14 +278,14 @@ def consult_item_view(
                 alignment=ft.MainAxisAlignment.START,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=20,
-                expand=True,
+                expand=True,  # Adicionado para expandir a coluna
             ),
             alignment=ft.alignment.top_center,
             bgcolor="#feffff",
-            expand=True,
+            expand=True,  # Adicionado para expandir o container
             padding=20,
         ),
-        expand=True,
+        expand=True,  # Adicionado para expandir o SafeArea
     )
 
     # Atualiza a lista ao carregar a página

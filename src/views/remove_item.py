@@ -24,13 +24,18 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         update_items()
 
     def item_card(item):
+        foto = item.get("foto")
+        if foto and not foto.startswith("http"):
+            foto_src = f"file://{foto}"
+        else:
+            foto_src = foto or "https://via.placeholder.com/100"
         return ft.Container(
             key=item.get("id", ""),  # chave única para facilitar atualização
             content=ft.Row(
                 [
                     ft.Container(
                         ft.Image(
-                            src=item.get("foto") or "https://via.placeholder.com/100",
+                            src=foto_src,
                             width=100,
                             height=100,
                             fit=ft.ImageFit.COVER,
@@ -104,7 +109,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
             ),
             padding=16,
             margin=ft.margin.symmetric(vertical=10),
-            bgcolor="#ffffff",
+            bgcolor="#f5f5f5",  # Alterado para cinza claro
             border_radius=12,
             shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
             width=420,
@@ -172,16 +177,16 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
             alignment=ft.MainAxisAlignment.START,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=20,
-            expand=True,
+            expand=True,  # Adicionado para expandir a coluna
         ),
         alignment=ft.alignment.top_center,
         bgcolor="#feffff",
-        expand=True,
+        expand=True,  # Adicionado para expandir o container
         padding=20,
     )
     container.on_mount = on_mount
 
     return ft.SafeArea(
         container,
-        expand=True,
+        expand=True,  # Adicionado para expandir o SafeArea
     )

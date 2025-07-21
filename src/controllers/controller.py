@@ -36,6 +36,12 @@ def adicionar_produto_controller(produto):
     # Identifica o tipo automaticamente pelo id
     produto["tipo"] = identificar_tipo_por_id(produto["id"])
     produto["codigo"] = produto["id"]
+
+    # Verifica se já existe produto com esse código
+    existentes = data.listar_produtos(filtro=produto["codigo"])
+    if any(p["codigo"] == produto["codigo"] for p in existentes):
+        raise ValueError("Já existe um produto com este código.")
+
     data.adicionar_produto(produto)
 
 

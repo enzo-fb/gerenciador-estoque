@@ -35,9 +35,10 @@ def success_view(on_add_another=None, on_voltar_menu=None):
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=30,
+            expand=True,  # Adicionado para expandir a coluna
         ),
         alignment=ft.alignment.center,
-        expand=True,
+        expand=True,  # Adicionado para expandir o container
         bgcolor="#feffff",
         padding=40,
     )

@@ -4,6 +4,7 @@ import flet as ft
 def home_view(
     on_add_item=None, on_remove_item=None, on_consult_item=None, on_sold_items=None
 ):
+    # Troque o nome do arquivo da logo conforme sua imagem personalizada
     logo = ft.Image(src="logo1.png", width=300, height=300)
     btn_width = 300
     btn_text_size = 20
@@ -41,9 +42,7 @@ def home_view(
         width=btn_width,
         height=50,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=btn_text_size)),
-        on_click=(
-            on_sold_items if on_sold_items else None
-        ),  # Corrigido: não use lambda, passe a função diretamente
+        on_click=(on_sold_items if on_sold_items else None),
     )
     return ft.SafeArea(
         ft.Container(
@@ -61,13 +60,14 @@ def home_view(
                         alignment=ft.alignment.center,
                         padding=ft.padding.only(top=10, bottom=100),
                     ),
-                    btn1,
-                    btn3,
-                    btn2,
-                    btn4,
+                    btn1,  # Adicionar novo item
+                    btn2,  # Remover item
+                    btn3,  # Consultar item
+                    btn4,  # Ver Itens Vendidos
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                expand=True,
             ),
             alignment=ft.alignment.center,
             bgcolor="#feffff",

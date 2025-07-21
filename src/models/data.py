@@ -19,7 +19,7 @@ def init_db():
                 tamanho TEXT CHECK(length(tamanho) <= 2),
                 preco REAL,
                 descricao TEXT,
-                foto TEXT,
+                foto BLOB,
                 vendido INTEGER DEFAULT 0
             )
             """
@@ -46,10 +46,14 @@ def init_db():
 
 
 def adicionar_produto(produto):
-    # Garante que cor, tipo e tamanho sejam salvos em maiúsculas
     tipo = produto["tipo"].upper()
     cor = produto["cor"].upper()
     tamanho = produto["tamanho"].upper()
+    foto_blob = None
+    foto_path = produto.get("foto")
+    if foto_path and os.path.exists(foto_path):
+        with open(foto_path, "rb") as f:
+            foto_blob = f.read()
     with closing(sqlite3.connect(DB_PATH)) as conn:
         c = conn.cursor()
         c.execute(
@@ -66,7 +70,7 @@ def adicionar_produto(produto):
                 tamanho,
                 produto["preco"],
                 produto["descricao"],
-                produto.get("foto"),
+                foto_blob,  # Salva como BLOB
                 produto.get("vendido", 0),
             ),
         )
@@ -97,7 +101,7 @@ def listar_produtos(filtro=None, vendidos=None):
                 tamanho=row[5],
                 preco=row[6],
                 descricao=row[7],
-                foto=row[8],
+                foto=row[8],  # Isso será um BLOB
                 vendido=row[9],
             )
             for row in rows
@@ -169,3 +173,15 @@ def marcar_como_vendido(codigo):
             c.execute("DELETE FROM produtos WHERE codigo=?", (codigo,))
             conn.commit()
             conn.commit()
+
+
+# Função utilitária para salvar BLOB em arquivo temporário
+def salvar_blob_em_arquivo(blob, ext=".jpg"):
+    import tempfile
+
+    if not blob:
+        return None
+    fd, path = tempfile.mkstemp(suffix=ext)
+    with open(path, "wb") as f:
+        f.write(blob)
+    return path

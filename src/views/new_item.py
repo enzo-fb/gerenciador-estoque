@@ -48,6 +48,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         color="#000000",
     )
     foto_path = ft.Text("", size=14, color="#666666")
+    foto_real_path = [None]  # Usado para armazenar o caminho real do arquivo
 
     instrucoes_camera = ft.Text(
         "Use o aplicativo de câmera do seu dispositivo para tirar a foto e depois clique em 'Adicionar Foto' para selecionar.",
@@ -61,10 +62,12 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         if e.files:
             foto_path.value = f"Foto selecionada: {e.files[0].name}"
             foto_path.color = "#228B22"
+            foto_real_path[0] = e.files[0].path  # Salva o caminho real do arquivo
             foto_path.update()
         else:
             foto_path.value = ""
             foto_path.color = "#666666"
+            foto_real_path[0] = None
             foto_path.update()
 
     file_picker = ft.FilePicker()
@@ -92,6 +95,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         preco_field.value = ""
         descricao_field.value = ""
         foto_path.value = ""
+        foto_real_path[0] = None
         tipo_selector.update()
         id_field.update()
         quantidade_field.update()
@@ -137,17 +141,22 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
             return
 
         if on_salvar:
-            on_salvar(
-                {
-                    "id": gerar_id_completo(),
-                    "quantidade": quantidade_field.value,
-                    "cor": cor_field.value,
-                    "tamanho": tamanho_field.value,
-                    "preco": preco_field.value,
-                    "descricao": descricao_field.value,
-                    "foto": foto_path.value if foto_path.value else None,
-                }
-            )
+            try:
+                on_salvar(
+                    {
+                        "id": gerar_id_completo(),
+                        "quantidade": quantidade_field.value,
+                        "cor": cor_field.value,
+                        "tamanho": tamanho_field.value,
+                        "preco": preco_field.value,
+                        "descricao": descricao_field.value,
+                        "foto": foto_real_path[0],  # Salva o caminho real do arquivo
+                    }
+                )
+            except Exception as ex:
+                id_field.error_text = str(ex)
+                id_field.update()
+                return
             limpar_campos()
             if on_sucesso:
                 on_sucesso()
@@ -203,14 +212,16 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=10,
-                expand=True,
+                expand=True,  # Adicionado para expandir a coluna
             ),
             alignment=ft.alignment.center,
             bgcolor="#feffff",
-            expand=True,
+            expand=True,  # Adicionado para expandir o container
             padding=20,
         ),
-        expand=True,
+        expand=True,  # Adicionado para expandir o SafeArea
     )
-    return ft.Stack([layout, file_picker], expand=True)
+    return ft.Stack(
+        [layout, file_picker], expand=True
+    )  # Adicionado expand=True no Stack
     return ft.Stack([layout, file_picker], expand=True)

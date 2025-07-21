@@ -25,7 +25,7 @@ company = "Flet"
 
 # copyright text to display in about app dialogs
 copyright = "Copyright (C) 2025 by Flet"
-icon = "assets/logo.png"  # Caminho para o arquivo da logo (PNG recomendado)
+icon = "logo.png"  
 
 [tool.flet.app]
 path = "src"
