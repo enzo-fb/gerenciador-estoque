@@ -67,11 +67,7 @@ def consult_item_view(
         )
         detalhes_dialog.content.controls = [
             ft.Image(
-                src=(
-                    item.get("foto")
-                    if item.get("foto")
-                    else "https://via.placeholder.com/200"
-                ),
+                src=item.get("foto") or "https://via.placeholder.com/200",
                 width=200,
                 height=200,
                 fit=ft.ImageFit.CONTAIN,
@@ -94,11 +90,7 @@ def consult_item_view(
                     # Foto do produto (imagem ou placeholder)
                     ft.Container(
                         ft.Image(
-                            src=(
-                                item["foto"]
-                                if item["foto"]
-                                else "https://via.placeholder.com/100"
-                            ),
+                            src=item.get("foto") or "https://via.placeholder.com/100",
                             width=100,
                             height=100,
                             fit=ft.ImageFit.COVER,
@@ -117,31 +109,31 @@ def consult_item_view(
                                 f"Código: {item.get('id', '')}",
                                 weight="bold",
                                 size=16,
-                                bgcolor="#000000",
+                                color="#000000",
                             ),
                             ft.Text(
                                 f"Tipo: {item.get('tipo', '')}",
                                 size=15,
-                                bgcolor="#000000",
+                                color="#000000",
                             ),  # Garante exibição do tipo
                             ft.Text(
                                 f"Cor: {item.get('cor', '')}",
                                 size=15,
-                                bgcolor="#000000",
+                                color="#000000",
                             ),
                             ft.Text(
                                 f"Tamanho: {item.get('tamanho', '')}",
                                 size=15,
-                                bgcolor="#000000",
+                                color="#000000",
                             ),
                             ft.Text(
                                 f"Qtd: {item.get('quantidade', '')}",
                                 size=15,
-                                bgcolor="#000000",
+                                color="#000000",
                             ),
                             ft.Text(
                                 f"Descrição: {item.get('descricao', '')}",
-                                bgcolor="#000000",
+                                color="#000000",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
@@ -153,9 +145,9 @@ def consult_item_view(
                                 width=180,
                                 height=40,
                                 style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e, codigo=item["id"]: marcar_vendido(
-                                    e, codigo
-                                ),
+                                on_click=lambda e, codigo=item.get(
+                                    "id", ""
+                                ): marcar_vendido(e, codigo),
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.START,

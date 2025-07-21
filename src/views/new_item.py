@@ -54,7 +54,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         size=12,
         color="#888888",
         italic=True,
-        align=ft.MainAxisAlignment.CENTER,
+        text_align=ft.TextAlign.CENTER,
     )
 
     def on_foto_result(e: ft.FilePickerResultEvent):
@@ -212,4 +212,5 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         ),
         expand=True,
     )
+    return ft.Stack([layout, file_picker], expand=True)
     return ft.Stack([layout, file_picker], expand=True)

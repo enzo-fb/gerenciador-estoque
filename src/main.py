@@ -73,7 +73,6 @@ def main(page: ft.Page):
                 on_voltar=go_to_menu,
                 on_marcar_vendido=marcar_como_vendido_controller,
                 on_listar=listar_produtos_controller,
-                on_listar_vendidos=listar_produtos_vendidos_controller,
             )
         )
         page.update()
@@ -94,4 +93,5 @@ def main(page: ft.Page):
     go_to_menu()
 
 
+ft.app(target=main)
 ft.app(target=main)
