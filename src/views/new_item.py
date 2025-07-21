@@ -181,27 +181,27 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
                             id_field,
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
-                        spacing=16,  # Espaçamento maior entre tipo e id
+                        spacing=10,  # Valor original
                     ),
-                    ft.Container(quantidade_field, padding=ft.Padding(0, 8, 0, 0)),
-                    ft.Container(cor_field, padding=ft.Padding(0, 8, 0, 0)),
-                    ft.Container(tamanho_field, padding=ft.Padding(0, 8, 0, 0)),
-                    ft.Container(preco_field, padding=ft.Padding(0, 8, 0, 0)),
-                    ft.Container(descricao_field, padding=ft.Padding(0, 8, 0, 0)),
-                    ft.Container(foto_path, padding=ft.Padding(0, 8, 0, 0)),
-                    ft.Container(adicionar_foto_btn, padding=ft.Padding(0, 12, 0, 0)),
-                    ft.Container(salvar_btn, padding=ft.Padding(0, 16, 0, 0)),
-                    ft.Container(voltar_btn, padding=ft.Padding(0, 8, 0, 0)),
+                    quantidade_field,
+                    cor_field,
+                    tamanho_field,
+                    preco_field,
+                    descricao_field,
+                    foto_path,
+                    adicionar_foto_btn,
+                    salvar_btn,
+                    voltar_btn,
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=18,  # Espaçamento vertical maior entre os elementos
+                spacing=10,  # Valor original
                 expand=True,
             ),
             alignment=ft.alignment.center,
             bgcolor="#feffff",
             expand=True,
-            padding=ft.Padding(24, 32, 24, 32),  # Padding geral maior
+            padding=20,  # Valor original
         ),
         expand=True,
     )
