@@ -68,22 +68,22 @@ def consult_item_view(
             foto_base64 = base64.b64encode(foto).decode("utf-8")
             foto_ctrl = ft.Image(
                 src_base64=foto_base64,
-                width=200,
-                height=200,
+                width=300,
+                height=300,
                 fit=ft.ImageFit.CONTAIN,
             )
         elif foto and not str(foto).startswith("http"):
             foto_ctrl = ft.Image(
                 src=f"file://{foto}",
-                width=200,
-                height=200,
+                width=300,
+                height=300,
                 fit=ft.ImageFit.CONTAIN,
             )
         else:
             foto_ctrl = ft.Image(
                 src=foto or "https://via.placeholder.com/200",
-                width=200,
-                height=200,
+                width=300,
+                height=300,
                 fit=ft.ImageFit.CONTAIN,
             )
         detalhes_dialog.title = ft.Text(
@@ -118,7 +118,10 @@ def consult_item_view(
             )
         else:
             foto_ctrl = ft.Image(
-                src=foto or "https://via.placeholder.com/100", width=100, height=100, fit=ft.ImageFit.COVER
+                src=foto or "https://via.placeholder.com/100",
+                width=100,
+                height=100,
+                fit=ft.ImageFit.COVER,
             )
         return ft.Container(
             content=ft.Row(
