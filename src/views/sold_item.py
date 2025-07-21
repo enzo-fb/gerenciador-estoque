@@ -1,4 +1,5 @@
 import flet as ft
+import base64
 
 
 def sold_item_view(on_voltar=None, on_listar_vendidos=None):
@@ -19,20 +20,24 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
 
     def item_card(item):
         foto = item.get("foto")
-        if foto and not foto.startswith("http"):
-            foto_src = f"file://{foto}"
+        if isinstance(foto, bytes) and foto:
+            foto_base64 = base64.b64encode(foto).decode("utf-8")
+            foto_ctrl = ft.Image(
+                src_base64=foto_base64, width=100, height=100, fit=ft.ImageFit.COVER
+            )
+        elif foto and not str(foto).startswith("http"):
+            foto_ctrl = ft.Image(
+                src=f"file://{foto}", width=100, height=100, fit=ft.ImageFit.COVER
+            )
         else:
-            foto_src = foto or "https://via.placeholder.com/100"
+            foto_ctrl = ft.Image(
+                src=foto or "https://via.placeholder.com/100", width=100, height=100, fit=ft.ImageFit.COVER
+            )
         return ft.Container(
             content=ft.Row(
                 [
                     ft.Container(
-                        ft.Image(
-                            src=foto_src,
-                            width=100,
-                            height=100,
-                            fit=ft.ImageFit.COVER,
-                        ),
+                        foto_ctrl,
                         width=110,
                         height=110,
                         bgcolor="#f0f0f0",

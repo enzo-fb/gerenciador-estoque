@@ -1,4 +1,5 @@
 import flet as ft
+import base64
 from models.data import salvar_blob_em_arquivo
 
 
@@ -62,28 +63,34 @@ def consult_item_view(
         # Use item_column.page para obter a página
         page = item_column.page if hasattr(item_column, "page") else None
         foto = item.get("foto")
-        foto_src = None
-        if isinstance(foto, bytes):
-            temp_path = salvar_blob_em_arquivo(foto)
-            foto_src = (
-                f"file://{temp_path}"
-                if temp_path
-                else "https://via.placeholder.com/200"
+        foto_ctrl = None
+        if isinstance(foto, bytes) and foto:
+            foto_base64 = base64.b64encode(foto).decode("utf-8")
+            foto_ctrl = ft.Image(
+                src_base64=foto_base64,
+                width=200,
+                height=200,
+                fit=ft.ImageFit.CONTAIN,
             )
         elif foto and not str(foto).startswith("http"):
-            foto_src = f"file://{foto}"
+            foto_ctrl = ft.Image(
+                src=f"file://{foto}",
+                width=200,
+                height=200,
+                fit=ft.ImageFit.CONTAIN,
+            )
         else:
-            foto_src = foto or "https://via.placeholder.com/200"
+            foto_ctrl = ft.Image(
+                src=foto or "https://via.placeholder.com/200",
+                width=200,
+                height=200,
+                fit=ft.ImageFit.CONTAIN,
+            )
         detalhes_dialog.title = ft.Text(
             f"Detalhes do Produto {item.get('id', '')}", weight="bold"
         )
         detalhes_dialog.content.controls = [
-            ft.Image(
-                src=foto_src,
-                width=200,
-                height=200,
-                fit=ft.ImageFit.CONTAIN,
-            ),
+            foto_ctrl,
             ft.Text(f"Código: {item.get('id', '')}", weight="bold"),
             ft.Text(f"Tipo: {item.get('tipo', '')}"),
             ft.Text(f"Cor: {item.get('cor', '')}"),
@@ -99,29 +106,26 @@ def consult_item_view(
 
     def item_card(item):
         foto = item.get("foto")
-        foto_src = None
-        if isinstance(foto, bytes):
-            temp_path = salvar_blob_em_arquivo(foto)
-            foto_src = (
-                f"file://{temp_path}"
-                if temp_path
-                else "https://via.placeholder.com/100"
+        foto_ctrl = None
+        if isinstance(foto, bytes) and foto:
+            foto_base64 = base64.b64encode(foto).decode("utf-8")
+            foto_ctrl = ft.Image(
+                src_base64=foto_base64, width=100, height=100, fit=ft.ImageFit.COVER
             )
         elif foto and not str(foto).startswith("http"):
-            foto_src = f"file://{foto}"
+            foto_ctrl = ft.Image(
+                src=f"file://{foto}", width=100, height=100, fit=ft.ImageFit.COVER
+            )
         else:
-            foto_src = foto or "https://via.placeholder.com/100"
+            foto_ctrl = ft.Image(
+                src=foto or "https://via.placeholder.com/100", width=100, height=100, fit=ft.ImageFit.COVER
+            )
         return ft.Container(
             content=ft.Row(
                 [
                     # Foto do produto (imagem ou placeholder)
                     ft.Container(
-                        ft.Image(
-                            src=foto_src,
-                            width=100,
-                            height=100,
-                            fit=ft.ImageFit.COVER,
-                        ),
+                        foto_ctrl,
                         width=110,
                         height=110,
                         bgcolor="#f0f0f0",
@@ -276,18 +280,6 @@ def consult_item_view(
         expand=True,  # Adicionado para expandir o SafeArea
     )
 
-    # Atualiza a lista ao carregar a página
-    view.on_mount = on_page_load
-
-    # Adiciona o dialog de detalhes à página
-    def on_view_mount(e):
-        page = e.page
-        page.dialog = detalhes_dialog
-        update_items()
-
-    view.on_mount = on_view_mount
-
-    return view
     # Atualiza a lista ao carregar a página
     view.on_mount = on_page_load
 
