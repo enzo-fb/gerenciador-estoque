@@ -4,9 +4,7 @@ import flet as ft
 def consult_item_view(
     on_voltar=None,
     on_listar=None,
-    on_listar_vendidos=None,
     on_marcar_vendido=None,
-    on_ver_vendidos=None,
 ):
     search_field = ft.TextField(
         label="Buscar por código, cor, tamanho...",
@@ -119,15 +117,31 @@ def consult_item_view(
                                 f"Código: {item.get('id', '')}",
                                 weight="bold",
                                 size=16,
+                                bgcolor="#000000",
                             ),
                             ft.Text(
-                                f"Tipo: {item.get('tipo', '')}", size=15
+                                f"Tipo: {item.get('tipo', '')}",
+                                size=15,
+                                bgcolor="#000000",
                             ),  # Garante exibição do tipo
-                            ft.Text(f"Cor: {item.get('cor', '')}", size=15),
-                            ft.Text(f"Tamanho: {item.get('tamanho', '')}", size=15),
-                            ft.Text(f"Qtd: {item.get('quantidade', '')}", size=15),
+                            ft.Text(
+                                f"Cor: {item.get('cor', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
+                            ft.Text(
+                                f"Tamanho: {item.get('tamanho', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
+                            ft.Text(
+                                f"Qtd: {item.get('quantidade', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
                             ft.Text(
                                 f"Descrição: {item.get('descricao', '')}",
+                                bgcolor="#000000",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,

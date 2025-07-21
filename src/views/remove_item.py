@@ -30,11 +30,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                 [
                     ft.Container(
                         ft.Image(
-                            src=(
-                                item.get("foto")
-                                if item.get("foto")
-                                else "https://via.placeholder.com/100"
-                            ),
+                            src=item.get("foto") or "https://via.placeholder.com/100",
                             width=100,
                             height=100,
                             fit=ft.ImageFit.COVER,
@@ -49,21 +45,42 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                     ft.Column(
                         [
                             ft.Text(
-                                f"Código: {item.get('id', '')}", weight="bold", size=16
+                                f"Código: {item.get('id', '')}",
+                                weight="bold",
+                                size=16,
+                                bgcolor="#000000",
                             ),
-                            ft.Text(f"Tipo: {item.get('tipo', '')}", size=15),
-                            ft.Text(f"Cor: {item.get('cor', '')}", size=15),
-                            ft.Text(f"Tamanho: {item.get('tamanho', '')}", size=15),
-                            ft.Text(f"Qtd: {item.get('quantidade', '')}", size=15),
+                            ft.Text(
+                                f"Tipo: {item.get('tipo', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
+                            ft.Text(
+                                f"Cor: {item.get('cor', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
+                            ft.Text(
+                                f"Tamanho: {item.get('tamanho', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
+                            ft.Text(
+                                f"Qtd: {item.get('quantidade', '')}",
+                                size=15,
+                                bgcolor="#000000",
+                            ),
                             ft.Text(
                                 f"Descrição: {item.get('descricao', '')}",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
+                                bgcolor="#000000",
                             ),
                             ft.Text(
                                 f"Preço: R$ {float(item.get('preco', 0) or 0):.2f}",
                                 size=14,
+                                bgcolor="#000000",
                             ),
                             ft.ElevatedButton(
                                 "Remover",

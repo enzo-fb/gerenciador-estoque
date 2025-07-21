@@ -26,30 +26,36 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         value="01",
     )
     id_field = ft.TextField(
-        label="6 dígitos finais", width=150, max_length=6  # 'required' removido
+        label="6 dígitos finais", width=150, max_length=6, color="#000000"
     )
     quantidade_field = ft.TextField(
-        label="Quantidade", width=300, keyboard_type=ft.KeyboardType.NUMBER
-    )
-    cor_field = ft.TextField(
-        label="Cor",
+        label="Quantidade",
         width=300,
-        # 'required' removido
+        keyboard_type=ft.KeyboardType.NUMBER,
+        color="#000000",
     )
-    tamanho_field = ft.TextField(
-        label="Tamanho",
-        width=300,
-        # 'required' removido
-    )
+    cor_field = ft.TextField(label="Cor", width=300, color="#000000")
+    tamanho_field = ft.TextField(label="Tamanho", width=300, color="#000000")
     preco_field = ft.TextField(
-        label="Preço",
-        width=300,
-        keyboard_type=ft.KeyboardType.NUMBER,  # 'required' removido
+        label="Preço", width=300, keyboard_type=ft.KeyboardType.NUMBER, color="#000000"
     )
     descricao_field = ft.TextField(
-        label="Descrição", width=300, multiline=True, min_lines=2, max_lines=2
+        label="Descrição",
+        width=300,
+        multiline=True,
+        min_lines=2,
+        max_lines=2,
+        color="#000000",
     )
     foto_path = ft.Text("", size=14, color="#666666")
+
+    instrucoes_camera = ft.Text(
+        "Use o aplicativo de câmera do seu dispositivo para tirar a foto e depois clique em 'Adicionar Foto' para selecionar.",
+        size=12,
+        color="#888888",
+        italic=True,
+        align=ft.MainAxisAlignment.CENTER,
+    )
 
     def on_foto_result(e: ft.FilePickerResultEvent):
         if e.files:
@@ -181,7 +187,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
                             id_field,
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
-                        spacing=10,  # Valor original
+                        spacing=10,
                     ),
                     quantidade_field,
                     cor_field,
@@ -189,20 +195,21 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
                     preco_field,
                     descricao_field,
                     foto_path,
-                    adicionar_foto_btn,
+                    adicionar_foto_btn,  # Botão para selecionar arquivo
+                    instrucoes_camera,
                     salvar_btn,
                     voltar_btn,
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=10,  # Valor original
+                spacing=10,
                 expand=True,
             ),
             alignment=ft.alignment.center,
             bgcolor="#feffff",
             expand=True,
-            padding=20,  # Valor original
+            padding=20,
         ),
         expand=True,
     )
-    return ft.Stack([layout, file_picker], expand=True)  # Garante que o Stack expanda
+    return ft.Stack([layout, file_picker], expand=True)
