@@ -49,9 +49,20 @@ def listar_produtos_controller(filtro=None, vendidos=None):
     return data.listar_produtos(filtro=filtro, vendidos=vendidos)
 
 
-def listar_produtos_vendidos_controller():
-    # Remova qualquer comentário, print ou instrução que escreva no terminal!
-    return data.listar_produtos_vendidos()
+def listar_produtos_vendidos_controller(filtro=None):
+    items = data.listar_produtos_vendidos()
+    if filtro:
+        filtro = filtro.lower()
+        items = [
+            item
+            for item in items
+            if filtro in str(item.get("id", "")).lower()
+            or filtro in str(item.get("tipo", "")).lower()
+            or filtro in str(item.get("cor", "")).lower()
+            or filtro in str(item.get("tamanho", "")).lower()
+            or filtro in str(item.get("descricao", "")).lower()
+        ]
+    return items
 
 
 def remover_produto_controller(codigo):

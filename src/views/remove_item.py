@@ -117,7 +117,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
 
     def update_items():
         termo = search_field.value.lower() if search_field.value else ""
-        items = on_listar() if on_listar else []
+        items = on_listar(termo) if on_listar else []
 
         # Aplica filtro de texto apenas se houver um termo
         if termo:

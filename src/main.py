@@ -51,7 +51,7 @@ def main(page: ft.Page):
             remove_item_view(
                 on_voltar=go_to_menu,
                 on_remover=remover_produto_controller,
-                on_listar=lambda termo=None: listar_produtos_controller(),
+                on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
             )
         )
         page.update()
@@ -72,7 +72,7 @@ def main(page: ft.Page):
             consult_item_view(
                 on_voltar=go_to_menu,
                 on_marcar_vendido=marcar_como_vendido_controller,
-                on_listar=listar_produtos_controller,
+                on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
             )
         )
         page.update()

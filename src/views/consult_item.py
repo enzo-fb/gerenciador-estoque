@@ -206,19 +206,7 @@ def consult_item_view(
             max_val = None
 
         # Busca todos os itens primeiro
-        items = on_listar() if on_listar else []
-
-        # Aplica filtro de texto se houver
-        if termo:
-            items = [
-                item
-                for item in items
-                if termo in str(item.get("id", "")).lower()
-                or termo in str(item.get("tipo", "")).lower()
-                or termo in str(item.get("cor", "")).lower()
-                or termo in str(item.get("tamanho", "")).lower()
-                or termo in str(item.get("descricao", "")).lower()
-            ]
+        items = on_listar(termo) if on_listar else []
 
         # Aplica filtro de preço
         filtered = []
@@ -288,6 +276,18 @@ def consult_item_view(
         expand=True,  # Adicionado para expandir o SafeArea
     )
 
+    # Atualiza a lista ao carregar a página
+    view.on_mount = on_page_load
+
+    # Adiciona o dialog de detalhes à página
+    def on_view_mount(e):
+        page = e.page
+        page.dialog = detalhes_dialog
+        update_items()
+
+    view.on_mount = on_view_mount
+
+    return view
     # Atualiza a lista ao carregar a página
     view.on_mount = on_page_load
 

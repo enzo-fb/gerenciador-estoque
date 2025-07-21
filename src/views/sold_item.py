@@ -107,7 +107,7 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
 
     def update_items():
         termo = search_field.value.lower() if search_field.value else ""
-        items = on_listar_vendidos() if on_listar_vendidos else []
+        items = on_listar_vendidos(termo) if on_listar_vendidos else []
         if termo:
             filtered = [
                 item
