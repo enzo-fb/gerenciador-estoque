@@ -181,28 +181,28 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
                             id_field,
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
-                        spacing=10,
+                        spacing=16,  # Espaçamento maior entre tipo e id
                     ),
-                    quantidade_field,
-                    cor_field,
-                    tamanho_field,
-                    preco_field,
-                    descricao_field,
-                    foto_path,  # Mostra info da foto selecionada acima do botão
-                    adicionar_foto_btn,
-                    salvar_btn,
-                    voltar_btn,
+                    ft.Container(quantidade_field, padding=ft.Padding(0, 8, 0, 0)),
+                    ft.Container(cor_field, padding=ft.Padding(0, 8, 0, 0)),
+                    ft.Container(tamanho_field, padding=ft.Padding(0, 8, 0, 0)),
+                    ft.Container(preco_field, padding=ft.Padding(0, 8, 0, 0)),
+                    ft.Container(descricao_field, padding=ft.Padding(0, 8, 0, 0)),
+                    ft.Container(foto_path, padding=ft.Padding(0, 8, 0, 0)),
+                    ft.Container(adicionar_foto_btn, padding=ft.Padding(0, 12, 0, 0)),
+                    ft.Container(salvar_btn, padding=ft.Padding(0, 16, 0, 0)),
+                    ft.Container(voltar_btn, padding=ft.Padding(0, 8, 0, 0)),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=10,
+                spacing=18,  # Espaçamento vertical maior entre os elementos
                 expand=True,
             ),
             alignment=ft.alignment.center,
             bgcolor="#feffff",
             expand=True,
-            padding=20,
+            padding=ft.Padding(24, 32, 24, 32),  # Padding geral maior
         ),
         expand=True,
     )
-    return ft.Stack([layout, file_picker])
+    return ft.Stack([layout, file_picker], expand=True)  # Garante que o Stack expanda
