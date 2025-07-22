@@ -100,7 +100,6 @@ def main(page: ft.Page):
         page.controls.clear()
         consult_view_content, update_consult_func = consult_item_view(
             on_voltar=go_to_menu,
-            on_marcar_vendido=marcar_como_vendido_controller,
             on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
         )
         page.controls.append(consult_view_content)

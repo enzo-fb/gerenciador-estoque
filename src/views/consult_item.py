@@ -4,10 +4,10 @@ import base64
 # from models.data import salvar_blob_em_arquivo # Comentei/removi se não estiver em uso para src_base64
 
 
+# O parâmetro on_marcar_vendido foi removido
 def consult_item_view(
     on_voltar=None,
     on_listar=None,
-    on_marcar_vendido=None,
 ):
     # Diálogo de detalhes (declarado aqui para ser acessível)
     detalhes_dialog = ft.AlertDialog(
@@ -28,30 +28,30 @@ def consult_item_view(
         width=300,
         prefix_icon=ft.Icons.SEARCH,
         on_change=lambda e: update_items(),
-        border_color="#ffffff",  # Adicionando cor de borda
+        border_color="#ffffff",
         bgcolor="#ffffff",
-        color="#000000",  # Cor do texto digitado
-        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
+        color="#000000",
+        label_style=ft.TextStyle(color="#808080"),
     )
     min_value_field = ft.TextField(
         label="Valor mínimo",
         width=145,
         keyboard_type=ft.KeyboardType.NUMBER,
         on_change=lambda e: update_items(),
-        border_color="#ffffff",  # Adicionando cor de borda
-        bgcolor="#ffffff",  # Adicionando cor de fundo
-        color="#000000",  # Cor do texto digitado
-        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
+        border_color="#ffffff",
+        bgcolor="#ffffff",
+        color="#000000",
+        label_style=ft.TextStyle(color="#808080"),
     )
     max_value_field = ft.TextField(
         label="Valor máximo",
         width=145,
         keyboard_type=ft.KeyboardType.NUMBER,
         on_change=lambda e: update_items(),
-        border_color="#ffffff",  # Adicionando cor de borda
-        bgcolor="#ffffff",  # Adicionando cor de fundo
-        color="#000000",  # Cor do texto digitado
-        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
+        border_color="#ffffff",
+        bgcolor="#ffffff",
+        color="#000000",
+        label_style=ft.TextStyle(color="#808080"),
     )
 
     item_column = ft.Column(
@@ -63,36 +63,26 @@ def consult_item_view(
         expand=True,
     )
 
-    def marcar_vendido(e, codigo):
-        if on_marcar_vendido:
-            on_marcar_vendido(codigo)
-        update_items()  # Atualiza a lista após marcar como vendido
+    # A função marcar_vendido foi REMOVIDA
+    # def marcar_vendido(e, codigo): ...
 
     def fechar_dialog(e):
-        page_instance = e.page  # Obtém a instância da página do evento
+        page_instance = e.page
         detalhes_dialog.open = False
         page_instance.update()
 
-    def mostrar_detalhes(e, item):  # Adicione 'e' como primeiro argumento
-        page_instance = e.page  # Obtém a instância da página do evento
-
+    def mostrar_detalhes(e, item):
+        page_instance = e.page
         foto = item.get("foto")
         foto_ctrl = None
         if isinstance(foto, bytes) and foto:
             foto_base64 = base64.b64encode(foto).decode("utf-8")
             foto_ctrl = ft.Image(
-                src_base64=foto_base64,
-                width=300,
-                height=300,
-                fit=ft.ImageFit.CONTAIN,
+                src_base64=foto_base64, width=300, height=300, fit=ft.ImageFit.CONTAIN
             )
         elif foto and not str(foto).startswith("http"):
-            # Removido 'file://' conforme discutido
             foto_ctrl = ft.Image(
-                src=foto,
-                width=300,
-                height=300,
-                fit=ft.ImageFit.CONTAIN,
+                src=foto, width=300, height=300, fit=ft.ImageFit.CONTAIN
             )
         else:
             foto_ctrl = ft.Image(
@@ -116,9 +106,6 @@ def consult_item_view(
             ft.Text(f"Descrição: {item.get('descricao', '')}"),
         ]
         detalhes_dialog.open = True
-
-        # Mude page.dialog para page_instance.dialog
-        # Ou adicione detalhes_dialog ao page_instance.overlay, o que é mais comum
         page_instance.dialog = detalhes_dialog
         page_instance.update()
 
@@ -131,7 +118,6 @@ def consult_item_view(
                 src_base64=foto_base64, width=100, height=100, fit=ft.ImageFit.COVER
             )
         elif foto and not str(foto).startswith("http"):
-            # Removido 'file://' conforme discutido
             foto_ctrl = ft.Image(src=foto, width=100, height=100, fit=ft.ImageFit.COVER)
         else:
             foto_ctrl = ft.Image(
@@ -140,10 +126,10 @@ def consult_item_view(
                 height=100,
                 fit=ft.ImageFit.COVER,
             )
+
         return ft.Container(
             content=ft.Row(
                 [
-                    # Foto do produto (imagem ou placeholder)
                     ft.Container(
                         foto_ctrl,
                         width=110,
@@ -153,7 +139,6 @@ def consult_item_view(
                         alignment=ft.alignment.center,
                         margin=ft.margin.only(right=16),
                     ),
-                    # Informações do produto
                     ft.Column(
                         [
                             ft.Text(
@@ -168,9 +153,7 @@ def consult_item_view(
                                 color="#000000",
                             ),
                             ft.Text(
-                                f"Cor: {item.get('cor', '')}",
-                                size=15,
-                                color="#000000",
+                                f"Cor: {item.get('cor', '')}", size=15, color="#000000"
                             ),
                             ft.Text(
                                 f"Tamanho: {item.get('tamanho', '')}",
@@ -194,19 +177,7 @@ def consult_item_view(
                                 size=14,
                                 color="#000000",
                             ),
-                            ft.ElevatedButton(
-                                "Marcar como vendido",
-                                bgcolor="#228B22",
-                                color="#ffffff",
-                                width=180,
-                                height=40,
-                                style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e_btn, codigo=item.get(  # Use um nome diferente para 'e' do lambda
-                                    "id", ""
-                                ): marcar_vendido(
-                                    e_btn, codigo
-                                ),
-                            ),
+                            # --- O BOTÃO "Marcar como vendido" FOI REMOVIDO DAQUI ---
                         ],
                         alignment=ft.MainAxisAlignment.START,
                         spacing=2,
@@ -220,11 +191,10 @@ def consult_item_view(
             border_radius=12,
             shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
             width=400,
-            on_click=lambda e_click: mostrar_detalhes(
-                e_click, item
-            ),  # Passe o evento e o item
+            on_click=lambda e_click: mostrar_detalhes(e_click, item),
         )
 
+    # O resto do arquivo permanece exatamente como você enviou.
     def update_items():
         termo = search_field.value.lower() if search_field.value else ""
         min_val = min_value_field.value
@@ -237,9 +207,7 @@ def consult_item_view(
             max_val = float(max_val) if max_val else None
         except ValueError:
             max_val = None
-
         items = on_listar(termo) if on_listar else []
-
         filtered = []
         for item in items:
             preco = item.get("preco", 0)
@@ -247,7 +215,6 @@ def consult_item_view(
                 max_val is None or preco <= max_val
             ):
                 filtered.append(item)
-
         item_column.controls.clear()
         if not filtered:
             item_column.controls.append(
@@ -256,7 +223,6 @@ def consult_item_view(
         else:
             for item in filtered:
                 item_column.controls.append(item_card(item))
-
         item_column.update()
 
     voltar_btn = ft.ElevatedButton(
@@ -284,9 +250,7 @@ def consult_item_view(
                     ),
                     item_column,
                     ft.Row(
-                        [voltar_btn],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        spacing=20,
+                        [voltar_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=20
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.START,
@@ -295,20 +259,17 @@ def consult_item_view(
                 expand=True,
             ),
             alignment=ft.alignment.top_center,
-            # bgcolor="#feffff",
             expand=True,
             padding=20,
         ),
         expand=True,
     )
 
-    # Função a ser chamada quando a view for montada e exibida.
     def on_view_mount(e):
         page = e.page
-        page.dialog = detalhes_dialog  # Garante que o dialog seja adicionado à página
-        update_items()  # Carrega os itens na inicialização
+        page.dialog = detalhes_dialog
+        update_items()
 
     view_content.on_mount = on_view_mount
 
-    # Retorna a view e a função de atualização para o controle externo
     return view_content, update_items
