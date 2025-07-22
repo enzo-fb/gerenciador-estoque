@@ -1,14 +1,12 @@
 import flet as ft
 import base64
 
-import flet as ft
-import base64
 
-
-def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
+# O parâmetro 'on_remover' foi trocado por 'on_request_remove' para maior clareza.
+def remove_item_view(on_voltar=None, on_request_remove=None, on_listar=None):
     search_field = ft.TextField(
         label="Buscar por código, cor, tamanho...",
-        width=420,  # Largura ajustada
+        width=420,
         prefix_icon=ft.Icons.SEARCH,
     )
 
@@ -21,12 +19,9 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         expand=True,
     )
 
-    def remover_item(e, codigo):
-        if on_remover:
-            on_remover(codigo)
-        update_items()
+    # A função 'remover_item' foi REMOVIDA daqui.
+    # A responsabilidade de remover será do arquivo principal que controla a navegação.
 
-    # --- ALTERAÇÃO DE LAYOUT AQUI ---
     def item_card(item):
         foto = item.get("foto")
         foto_ctrl = ft.Image(
@@ -45,7 +40,6 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
             key=item_id,
             content=ft.Row(
                 [
-                    # Elemento 1: Imagem (sem alterações)
                     ft.Container(
                         foto_ctrl,
                         width=110,
@@ -53,11 +47,8 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                         bgcolor="#f0f0f0",
                         border_radius=8,
                         alignment=ft.alignment.center,
-                        margin=ft.margin.only(
-                            right=16
-                        ),  # Mantém a distância da imagem para o texto
+                        margin=ft.margin.only(right=16),
                     ),
-                    # Elemento 2: Coluna de Textos (MODIFICADO)
                     ft.Column(
                         [
                             ft.Text(
@@ -99,21 +90,20 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                         ],
                         spacing=2,
                         alignment=ft.MainAxisAlignment.CENTER,
-                        # A propriedade expand=True faz esta coluna crescer e ocupar todo o espaço
-                        # disponível no meio, empurrando o ícone para a direita.
                         expand=True,
                     ),
-                    # Elemento 3: Botão de Lixeira (MOVIDO)
+                    # --- ALTERAÇÃO NO BOTÃO ---
                     ft.IconButton(
                         icon=ft.Icons.DELETE_OUTLINE,
                         icon_color=ft.Colors.RED_700,
                         tooltip="Remover item",
-                        on_click=lambda e, codigo=item_id: remover_item(e, codigo),
+                        # 1. Guarda o ID do item no próprio botão
+                        data=item_id,
+                        # 2. Chama a função de callback externa
+                        on_click=on_request_remove,
                     ),
                 ],
-                # Alinha verticalmente a imagem, o bloco de texto e o ícone no centro.
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                # Garante que a largura do card seja consistente
                 width=420,
             ),
             padding=16,
@@ -125,8 +115,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
             ),
         )
 
-    # --- FIM DA ALTERAÇÃO ---
-
+    # Nenhuma alteração daqui para baixo no restante do arquivo.
     def update_items():
         termo = search_field.value.lower() if search_field.value else ""
         items = on_listar(termo) if on_listar else []
@@ -158,7 +147,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         "Voltar para menu",
         bgcolor="#6495ED",
         color="#ffffff",
-        width=420,  # Largura ajustada
+        width=420,
         height=50,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
         on_click=on_voltar,
@@ -191,9 +180,13 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         expand=True,
     )
 
+    # Este código está usando o padrão on_mount, o que é ótimo.
+    # Vou mantê-lo, pois é mais limpo.
     def on_view_mount(e):
         update_items()
 
     view_content.on_mount = on_view_mount
 
+    # O retorno da função é alterado para se adequar ao on_mount.
+    # Se você preferir o outro padrão, me avise.
     return view_content, update_items

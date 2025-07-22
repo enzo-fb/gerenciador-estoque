@@ -5,6 +5,7 @@ from views.remove_item import remove_item_view
 from views.consult_item import consult_item_view
 from views.sold_item import sold_item_view
 from views.sucess import success_view
+from views.confirm import confirm_view
 from controllers.controller import (
     inicializar_banco,
     adicionar_produto_controller,
@@ -45,20 +46,44 @@ def main(page: ft.Page):
         )
         page.update()
 
+    def go_to_confirm_remove(e: ft.ControlEvent):
+
+        item_id_to_remove = e.control.data
+
+        def handle_confirm(e_confirm):
+            """Função executada ao clicar em 'Confirmar'."""
+            remover_produto_controller(item_id_to_remove)
+            go_to_remove_item()
+
+        def handle_cancel(e_cancel):
+            """Função executada ao clicar em 'Cancelar'."""
+            go_to_remove_item()
+
+        page.controls.clear()
+
+        confirmation_page = confirm_view(
+            on_confirm=handle_confirm,
+            on_cancel=handle_cancel,
+            title="Confirmar Exclusão",
+            message=f"Tem certeza que deseja remover o item de código '{item_id_to_remove}' do estoque?",
+            confirm_text="Sim, Remover",
+            cancel_text="Cancelar",
+        )
+
+        page.controls.append(confirmation_page)
+        page.update()
+
     def go_to_remove_item(e=None):
         page.controls.clear()
 
-        # Desempacota a view e a função, exatamente como no seu exemplo
         view_content, update_function = remove_item_view(
             on_voltar=go_to_menu,
-            on_remover=remover_produto_controller,
-            on_listar=lambda termo=None: listar_produtos_controller(filtro=termo),
+            on_request_remove=go_to_confirm_remove,
+            on_listar=listar_produtos_controller,
         )
 
         page.controls.append(view_content)
         page.update()
-
-        # Chama a função de atualização após a página ser renderizada
         update_function()
 
     def go_to_sold_items(e=None):
