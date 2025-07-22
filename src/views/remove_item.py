@@ -1,16 +1,15 @@
 import flet as ft
 import base64
 
-# from models.data import salvar_blob_em_arquivo # Mantenha ou remova conforme seu uso real
+import flet as ft
+import base64
 
 
 def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
     search_field = ft.TextField(
         label="Buscar por código, cor, tamanho...",
-        width=300,
+        width=420,  # Largura ajustada
         prefix_icon=ft.Icons.SEARCH,
-        # O on_change aqui está correto, não precisa mexer.
-        # Ele será reatribuído no final para garantir que a função exista.
     )
 
     item_column = ft.Column(
@@ -25,32 +24,28 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
     def remover_item(e, codigo):
         if on_remover:
             on_remover(codigo)
-        # Atualiza a lista após remover o item.
-        # Isso forçará o recarregamento dos itens restantes.
         update_items()
 
+    # --- ALTERAÇÃO DE LAYOUT AQUI ---
     def item_card(item):
-        # Esta função está perfeita, não precisa de alterações.
         foto = item.get("foto")
-        foto_ctrl = None
+        foto_ctrl = ft.Image(
+            src="https://via.placeholder.com/110",
+            width=110,
+            height=110,
+            fit=ft.ImageFit.COVER,
+            border_radius=8,
+        )
         if isinstance(foto, bytes) and foto:
-            foto_base64 = base64.b64encode(foto).decode("utf-8")
-            foto_ctrl = ft.Image(
-                src_base64=foto_base64, width=300, height=300, fit=ft.ImageFit.COVER
-            )
-        elif foto and not str(foto).startswith("http"):
-            foto_ctrl = ft.Image(src=foto, width=300, height=300, fit=ft.ImageFit.COVER)
-        else:
-            foto_ctrl = ft.Image(
-                src=foto or "https://via.placeholder.com/100",
-                width=300,
-                height=300,
-                fit=ft.ImageFit.COVER,
-            )
+            foto_ctrl.src_base64 = base64.b64encode(foto).decode("utf-8")
+
+        item_id = item.get("id", "")
+
         return ft.Container(
-            key=item.get("id", ""),  # chave única para facilitar atualização
+            key=item_id,
             content=ft.Row(
                 [
+                    # Elemento 1: Imagem (sem alterações)
                     ft.Container(
                         foto_ctrl,
                         width=110,
@@ -58,12 +53,15 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                         bgcolor="#f0f0f0",
                         border_radius=8,
                         alignment=ft.alignment.center,
-                        margin=ft.margin.only(right=16),
+                        margin=ft.margin.only(
+                            right=16
+                        ),  # Mantém a distância da imagem para o texto
                     ),
+                    # Elemento 2: Coluna de Textos (MODIFICADO)
                     ft.Column(
                         [
                             ft.Text(
-                                f"Código: {item.get('id', '')}",
+                                f"Código: {item_id}",
                                 weight="bold",
                                 size=16,
                                 color="#000000",
@@ -74,9 +72,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                                 color="#000000",
                             ),
                             ft.Text(
-                                f"Cor: {item.get('cor', '')}",
-                                size=15,
-                                color="#000000",
+                                f"Cor: {item.get('cor', '')}", size=15, color="#000000"
                             ),
                             ft.Text(
                                 f"Tamanho: {item.get('tamanho', '')}",
@@ -100,41 +96,40 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
                                 size=14,
                                 color="#000000",
                             ),
-                            ft.ElevatedButton(
-                                "Remover",
-                                bgcolor="#B22222",
-                                color="#ffffff",
-                                width=180,
-                                height=40,
-                                style=ft.ButtonStyle(text_style=ft.TextStyle(size=16)),
-                                on_click=lambda e_btn, codigo=item.get(
-                                    "codigo", item.get("id", "")
-                                ): remover_item(
-                                    e_btn, codigo
-                                ),  # Passa o evento aqui
-                            ),
                         ],
-                        alignment=ft.MainAxisAlignment.START,
-                        spacing=6,
-                        width=230,
+                        spacing=2,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        # A propriedade expand=True faz esta coluna crescer e ocupar todo o espaço
+                        # disponível no meio, empurrando o ícone para a direita.
+                        expand=True,
+                    ),
+                    # Elemento 3: Botão de Lixeira (MOVIDO)
+                    ft.IconButton(
+                        icon=ft.Icons.DELETE_OUTLINE,
+                        icon_color=ft.Colors.RED_700,
+                        tooltip="Remover item",
+                        on_click=lambda e, codigo=item_id: remover_item(e, codigo),
                     ),
                 ],
-                alignment=ft.MainAxisAlignment.START,
+                # Alinha verticalmente a imagem, o bloco de texto e o ícone no centro.
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                # Garante que a largura do card seja consistente
+                width=420,
             ),
             padding=16,
-            margin=ft.margin.symmetric(vertical=10),
+            margin=ft.margin.symmetric(vertical=8),
             bgcolor="#f5f5f5",
             border_radius=12,
-            shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
-            width=420,
+            shadow=ft.BoxShadow(
+                blur_radius=5, color="#00000020", offset=ft.Offset(1, 1)
+            ),
         )
 
+    # --- FIM DA ALTERAÇÃO ---
+
     def update_items():
-        # Esta função também está perfeita, não precisa de alterações.
         termo = search_field.value.lower() if search_field.value else ""
         items = on_listar(termo) if on_listar else []
-
         if termo:
             filtered = [
                 item
@@ -147,7 +142,6 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
             ]
         else:
             filtered = items
-
         item_column.controls.clear()
         if not filtered:
             item_column.controls.append(
@@ -156,7 +150,6 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         else:
             for item in filtered:
                 item_column.controls.append(item_card(item))
-
         item_column.update()
 
     search_field.on_change = lambda e: update_items()
@@ -165,7 +158,7 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         "Voltar para menu",
         bgcolor="#6495ED",
         color="#ffffff",
-        width=300,
+        width=420,  # Largura ajustada
         height=50,
         style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
         on_click=on_voltar,
@@ -198,10 +191,9 @@ def remove_item_view(on_voltar=None, on_remover=None, on_listar=None):
         expand=True,
     )
 
-    # --- CORREÇÃO MÍNIMA E NECESSÁRIA ---
-    def on_view_mount(e):  # <<< ADICIONADO (1/3)
-        update_items()  # <<< ADICIONADO (2/3)
+    def on_view_mount(e):
+        update_items()
 
-    view_content.on_mount = on_view_mount  # <<< ADICIONADO (3/3)
+    view_content.on_mount = on_view_mount
 
     return view_content, update_items
