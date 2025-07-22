@@ -2,26 +2,40 @@ import flet as ft
 
 
 def home_view(
-    on_add_item=None, on_remove_item=None, on_consult_item=None, on_sold_items=None
+    on_add_item=None,
+    on_remove_item=None,
+    on_consult_item=None,
+    on_sold_items=None,
+    on_sell_item=None,
+    on_update_item=None,
 ):
+    """Cria a view da tela inicial com um layout de grade 2x3 manual e centralizado."""
 
-    # Os dados e a função para criar os cards continuam os mesmos,
-    # pois é uma ótima prática de organização.
     button_data = [
+        {
+            "icon": ft.Icons.POINT_OF_SALE_ROUNDED,
+            "text": "Vender Item",
+            "on_click": on_sell_item,
+        },
         {
             "icon": ft.Icons.ADD_SHOPPING_CART_ROUNDED,
             "text": "Adicionar Item",
             "on_click": on_add_item,
         },
         {
-            "icon": ft.Icons.REMOVE_SHOPPING_CART_OUTLINED,
-            "text": "Remover Item",
-            "on_click": on_remove_item,
+            "icon": ft.Icons.EDIT_NOTE_ROUNDED,
+            "text": "Atualizar Item",
+            "on_click": on_update_item,
         },
         {
             "icon": ft.Icons.SEARCH_ROUNDED,
             "text": "Consultar Item",
             "on_click": on_consult_item,
+        },
+        {
+            "icon": ft.Icons.REMOVE_SHOPPING_CART_OUTLINED,
+            "text": "Remover Item",
+            "on_click": on_remove_item,
         },
         {
             "icon": ft.Icons.PRICE_CHECK_ROUNDED,
@@ -61,50 +75,52 @@ def home_view(
             ink=True,
         )
 
+    # Layout manual para a grade 2x3
     button_layout = ft.Column(
         controls=[
-            # Primeira linha de cards
             ft.Row(
                 controls=[
                     create_menu_card(button_data[0]),
                     create_menu_card(button_data[1]),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os 2 cards na linha
-                spacing=20,  # Espaço horizontal entre os cards
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
             ),
-            # Segunda linha de cards
             ft.Row(
                 controls=[
                     create_menu_card(button_data[2]),
                     create_menu_card(button_data[3]),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os 2 cards na linha
-                spacing=20,  # Espaço horizontal entre os cards
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
+            ),
+            ft.Row(
+                controls=[
+                    create_menu_card(button_data[4]),
+                    create_menu_card(button_data[5]),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
             ),
         ],
-        spacing=20,  # Espaço vertical entre as linhas
+        spacing=20,
     )
 
     return ft.SafeArea(
         ft.Container(
             content=ft.Column(
                 [
-                    # Seção do Cabeçalho
-                    ft.Image(src="splash_android.png", width=180, height=180),
+                    ft.Image(src="splash_android.png", width=160, height=160),
                     ft.Text(
                         "Controle de Estoque", size=32, weight="bold", color="#ffffff"
                     ),
-                    # Espaçador entre o título e o bloco de botões
-                    ft.Container(height=30),
-                    # O layout dos botões que acabamos de criar
+                    ft.Container(height=20),
                     button_layout,
                 ],
-                # Centraliza todos os elementos da coluna (cabeçalho e botões)
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                expand=True,  # Garante que a coluna ocupe todo o espaço vertical
+                expand=True,
             ),
-            # Centraliza o conteúdo do container na página
             alignment=ft.alignment.center,
             padding=20,
             expand=True,
