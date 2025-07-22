@@ -57,7 +57,6 @@ def confirm_view(
         width=450,
         padding=30,
         border_radius=12,
-        bgcolor=ft.Colors.WHITE,
         shadow=ft.BoxShadow(blur_radius=20, color="#00000040"),
     )
 

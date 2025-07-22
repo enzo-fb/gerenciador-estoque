@@ -7,9 +7,18 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
         label="Buscar por código, cor, tipo...",
         width=300,
         prefix_icon=ft.Icons.SEARCH,
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        color="#000000",  # Cor do texto digitado
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
 
     contador = ft.Text("Total de itens vendidos: 0", size=16)
+    contador_saldo_vendidos = ft.Text(
+        "Saldo total de itens vendidos: R$ 0.00",
+        size=16,
+        color="#ffffff",
+    )
     items_column = ft.Column(
         [],
         scroll=ft.ScrollMode.AUTO,
@@ -107,7 +116,6 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
             ),
             padding=16,
             margin=ft.margin.symmetric(vertical=10),
-            bgcolor="#f5f5f5",  # Alterado para cinza claro
             border_radius=12,
             shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
             width=420,
@@ -130,15 +138,19 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
             filtered = items
 
         contador.value = f"Total de itens vendidos: {len(filtered)}"
+        saldo = 0
         items_column.controls.clear()
         if filtered:
             for item in filtered:
                 items_column.controls.append(item_card(item))
+                saldo += float(item.get("preco", 0) or 0)
         else:
             items_column.controls.append(
                 ft.Text("Nenhum item vendido encontrado.", color="red", size=18)
             )
+        contador_saldo_vendidos.value = f"Saldo total de itens vendidos: R$ {saldo:.2f}"
         contador.update()
+        contador_saldo_vendidos.update()  # <-- Adicione esta linha!
         items_column.update()
 
     search_field.on_change = lambda e: update_items()
@@ -164,16 +176,17 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
                 ),
                 search_field,
                 contador,
+                contador_saldo_vendidos,  # <-- Adicione aqui!
                 items_column,
                 voltar_btn,
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            expand=True,  # Adicionado para expandir a coluna
+            expand=True,
         ),
         padding=20,
-        expand=True,  # Adicionado para expandir o container
+        expand=True,
         alignment=ft.alignment.center,
     )
 
@@ -185,4 +198,4 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
     return (
         ft.SafeArea(container, expand=True),
         update_items,
-    )  # Adicionado expand=True no SafeArea
+    )

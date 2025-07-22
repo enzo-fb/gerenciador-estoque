@@ -8,6 +8,10 @@ def remove_item_view(on_voltar=None, on_request_remove=None, on_listar=None):
         label="Buscar por código, cor, tamanho...",
         width=420,
         prefix_icon=ft.Icons.SEARCH,
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        color="#000000",  # Cor do texto digitado
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
 
     item_column = ft.Column(
@@ -161,7 +165,7 @@ def remove_item_view(on_voltar=None, on_request_remove=None, on_listar=None):
                         "Remover Item do Estoque",
                         size=28,
                         weight="bold",
-                        color="#000000",
+                        color="#ffffff",
                     ),
                     search_field,
                     item_column,
@@ -173,7 +177,6 @@ def remove_item_view(on_voltar=None, on_request_remove=None, on_listar=None):
                 expand=True,
             ),
             alignment=ft.alignment.top_center,
-            bgcolor="#feffff",
             expand=True,
             padding=20,
         ),

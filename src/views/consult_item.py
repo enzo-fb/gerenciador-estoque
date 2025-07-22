@@ -28,18 +28,30 @@ def consult_item_view(
         width=300,
         prefix_icon=ft.Icons.SEARCH,
         on_change=lambda e: update_items(),
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        color="#000000",  # Cor do texto digitado
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
     min_value_field = ft.TextField(
         label="Valor mínimo",
         width=145,
         keyboard_type=ft.KeyboardType.NUMBER,
         on_change=lambda e: update_items(),
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",  # Adicionando cor de fundo
+        color="#000000",  # Cor do texto digitado
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
     max_value_field = ft.TextField(
         label="Valor máximo",
         width=145,
         keyboard_type=ft.KeyboardType.NUMBER,
         on_change=lambda e: update_items(),
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",  # Adicionando cor de fundo
+        color="#000000",  # Cor do texto digitado
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
 
     item_column = ft.Column(
@@ -262,7 +274,7 @@ def consult_item_view(
             ft.Column(
                 [
                     ft.Text(
-                        "Consultar Estoque", size=28, weight="bold", color="#000000"
+                        "Consultar Estoque", size=28, weight="bold", color="#ffffff"
                     ),
                     search_field,
                     ft.Row(
@@ -283,7 +295,7 @@ def consult_item_view(
                 expand=True,
             ),
             alignment=ft.alignment.top_center,
-            bgcolor="#feffff",
+            # bgcolor="#feffff",
             expand=True,
             padding=20,
         ),

@@ -19,25 +19,61 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         ("14", "ROUPA ÍNTIMA"),
     ]
 
-    tipo_selector = ft.Dropdown(
+    tipo_selector = ft.DropdownM2(
         label="Tipo",
-        width=150,
+        width=200,  # Um pouco mais de espaço para o ícone
         options=[ft.dropdown.Option(k, text=f"{v} ({k})") for k, v in TIPOS_PRODUTO],
         value="01",
+        # --- Estilo Visual Melhorado ---
+        bgcolor=ft.Colors.WHITE,
+        color=ft.Colors.BLACK,
+        border_radius=8,
+        border_color="transparent",  # Borda invisível quando não focado
+        focused_border_color=ft.Colors.BLUE_600,  # Borda azul ao focar
+        icon=ft.Icons.ARROW_DROP_DOWN,
     )
     id_field = ft.TextField(
-        label="6 dígitos finais", width=150, max_length=6, color="#000000"
+        label="6 dígitos finais",
+        width=100,
+        max_length=6,
+        color="#000000",
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
     quantidade_field = ft.TextField(
         label="Quantidade",
         width=300,
         keyboard_type=ft.KeyboardType.NUMBER,
-        color="#000000",
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        color="#000000",  # Cor do texto digitado
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
-    cor_field = ft.TextField(label="Cor", width=300, color="#000000")
-    tamanho_field = ft.TextField(label="Tamanho", width=300, color="#000000")
+    cor_field = ft.TextField(
+        label="Cor",
+        width=300,
+        color="#000000",
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
+    )
+    tamanho_field = ft.TextField(
+        label="Tamanho",
+        width=300,
+        color="#000000",
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
+    )
     preco_field = ft.TextField(
-        label="Preço", width=300, keyboard_type=ft.KeyboardType.NUMBER, color="#000000"
+        label="Preço",
+        width=300,
+        keyboard_type=ft.KeyboardType.NUMBER,
+        color="#000000",
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
     descricao_field = ft.TextField(
         label="Descrição",
@@ -46,6 +82,9 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         min_lines=2,
         max_lines=2,
         color="#000000",
+        border_color="#ffffff",  # Adicionando cor de borda
+        bgcolor="#ffffff",
+        label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
     foto_path = ft.Text("", size=14, color="#666666")
     foto_real_path = [None]  # Usado para armazenar o caminho real do arquivo
@@ -188,7 +227,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
             ft.Column(
                 [
                     ft.Text(
-                        "Adicionar Novo Item", size=28, weight="bold", color="#000000"
+                        "Adicionar Novo Item", size=28, weight="bold", color="#ffffff"
                     ),
                     ft.Row(
                         [
@@ -215,7 +254,6 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
                 expand=True,  # Adicionado para expandir a coluna
             ),
             alignment=ft.alignment.center,
-            bgcolor="#feffff",
             expand=True,  # Adicionado para expandir o container
             padding=20,
         ),

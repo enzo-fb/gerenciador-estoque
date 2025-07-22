@@ -39,6 +39,5 @@ def success_view(on_add_another=None, on_voltar_menu=None):
         ),
         alignment=ft.alignment.center,
         expand=True,  # Adicionado para expandir o container
-        bgcolor="#feffff",
         padding=40,
     )
