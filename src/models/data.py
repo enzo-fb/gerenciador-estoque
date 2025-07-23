@@ -154,77 +154,77 @@ def remover_produto_por_codigo(codigo):
         conn.commit()
 
 
-def marcar_como_vendido_controller(produto_id, quantidade_vendida, preco_venda):
+def atualizar_estoque_pos_venda(cursor, produto_id, nova_quantidade):
+
+    cursor.execute(
+        "UPDATE produtos SET quantidade=? WHERE id=?",
+        (nova_quantidade, produto_id),
+    )
+
+
+def marcar_como_vendido_controller(produto, quantidade_vendida, preco_venda):
+    import time
 
     try:
-        with closing(sqlite3.connect(DB_PATH)) as conn:
-            c = conn.cursor()
-
-            # 1. Busca todas as colunas do produto
-            c.execute("SELECT * FROM produtos WHERE id=?", (produto_id,))
-            resultado = c.fetchone()
-
-            if not resultado:
-                print(f"Erro: Produto com ID {produto_id} não encontrado.")
-                return False
-
-            # Ajuste dos índices conforme a ordem da tabela produtos:
-            # id, codigo, tipo, quantidade, cor, tamanho, preco, descricao, foto, vendido
-            quantidade_disponivel = resultado[3]
-
-            if quantidade_vendida > quantidade_disponivel:
-                print(
-                    f"Erro: A quantidade vendida ({quantidade_vendida}) é maior que a disponível ({quantidade_disponivel})."
-                )
-                return False
-
-            # 2. Insere o registro na tabela de vendas
-            # Obter data/hora de Brasília
-
-            tz = ZoneInfo("America/Sao_Paulo")
-            now = datetime.now(tz)
-            data_venda = now.strftime("%d-%m-%Y")
-            hora_venda = now.strftime("%H:%M:%S")
-
-            c.execute(
-                """
-                INSERT INTO produtos_vendidos (
-                    id, codigo, tipo, quantidade, cor, tamanho, preco, descricao, foto, data_venda, hora_venda
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    resultado[0],  # id
-                    resultado[1],  # codigo
-                    resultado[2],  # tipo
-                    quantidade_vendida,  # quantidade vendida
-                    resultado[4],  # cor
-                    resultado[5],  # tamanho
-                    preco_venda,  # preco da venda
-                    resultado[7],  # descricao
-                    resultado[8],  # foto
-                    data_venda,
-                    hora_venda,
-                ),
-            )
-
-            # 3. Atualiza a quantidade do produto na tabela principal
-            nova_quantidade = quantidade_disponivel - quantidade_vendida
-            if nova_quantidade > 0:
-                # Se ainda houver estoque, apenas atualiza a quantidade
-                c.execute(
-                    "UPDATE produtos SET quantidade=? WHERE id=?",
-                    (nova_quantidade, produto_id),
-                )
-            else:
-                # Se o estoque chegar a zero, remove o produto
-                c.execute("DELETE FROM produtos WHERE id=?", (produto_id,))
-
-            conn.commit()
-            print(f"Venda do produto ID {produto_id} registrada com sucesso!")
-            return True
-
-    except sqlite3.Error as e:
-        print(f"Erro no banco de dados: {e}")
+        for tentativa in range(3):
+            try:
+                with closing(sqlite3.connect(DB_PATH, isolation_level=None)) as conn:
+                    c = conn.cursor()
+                    quantidade_disponivel = int(produto.get("quantidade", 0))
+                    if quantidade_vendida > quantidade_disponivel:
+                        print(
+                            f"Erro: A quantidade vendida ({quantidade_vendida}) é maior que a disponível ({quantidade_disponivel})."
+                        )
+                        return False
+                    tz = ZoneInfo("America/Sao_Paulo")
+                    now = datetime.now(tz)
+                    data_venda = now.strftime("%d-%m-%Y")
+                    hora_venda = now.strftime("%H:%M:%S")
+                    c.execute(
+                        """
+                        INSERT INTO produtos_vendidos (
+                            id, codigo, tipo, quantidade, cor, tamanho, preco, descricao, foto, data_venda, hora_venda
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            produto.get("id"),
+                            produto.get("codigo"),
+                            produto.get("tipo"),
+                            quantidade_vendida,
+                            produto.get("cor"),
+                            produto.get("tamanho"),
+                            preco_venda,
+                            produto.get("descricao"),
+                            produto.get("foto"),
+                            data_venda,
+                            hora_venda,
+                        ),
+                    )
+                    nova_quantidade = quantidade_disponivel - quantidade_vendida
+                    if nova_quantidade > 0:
+                        print(f"Nova quantidade após venda: {nova_quantidade}")
+                        atualizar_estoque_pos_venda(
+                            c, produto.get("id"), nova_quantidade
+                        )
+                    else:
+                        remover_produto_por_codigo(produto.get("codigo"))
+                    conn.commit()
+                    print(
+                        f"Venda do produto ID {produto.get('id')} registrada com sucesso!"
+                    )
+                    return True
+            except sqlite3.OperationalError as err:
+                if "database is locked" in str(err):
+                    print("Banco de dados está bloqueado, tentando novamente...")
+                    time.sleep(0.2)
+                    continue
+                else:
+                    print(f"Erro inesperado: {err}")
+                    return False
+        print("Falha ao acessar o banco de dados após múltiplas tentativas.")
+        return False
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
         return False
 
 

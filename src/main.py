@@ -145,10 +145,9 @@ def main(page: ft.Page):
             go_to_select_for_sale()
 
         def handle_sale_confirm(quantidade_vendida, preco_venda):
-            # Mostra tela/modal de confirmação antes de registrar venda
             def confirmar_venda_final(e=None):
                 marcar_como_vendido_controller(
-                    item_selecionado["id"], quantidade_vendida, preco_venda
+                    item_selecionado, quantidade_vendida, preco_venda
                 )
                 go_to_select_for_sale()
 
