@@ -189,8 +189,8 @@ def marcar_como_vendido_controller(produto, quantidade_vendida, preco_venda):
                             f"Erro: A quantidade vendida ({quantidade_vendida}) é maior que a disponível ({quantidade_disponivel})."
                         )
                         return False
-                    tz = ZoneInfo("America/Sao_Paulo")
-                    now = datetime.now(tz)
+
+                    now = datetime.now()
                     data_venda = now.strftime("%d-%m-%Y")
                     hora_venda = now.strftime("%H:%M:%S")
                     c.execute(
