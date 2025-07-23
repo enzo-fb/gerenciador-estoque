@@ -40,6 +40,8 @@ def remove_item_view(on_voltar=None, on_request_remove=None, on_listar=None):
 
         item_id = item.get("id", "")
 
+        text_color = "#000000"  # cor preta
+
         return ft.Container(
             key=item_id,
             content=ft.Row(
@@ -59,29 +61,37 @@ def remove_item_view(on_voltar=None, on_request_remove=None, on_listar=None):
                                 f"Código: {item_id}",
                                 weight="bold",
                                 size=16,
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Tipo: {item.get('tipo', '')}",
                                 size=15,
+                                color=text_color,
                             ),
-                            ft.Text(f"Cor: {item.get('cor', '')}", size=15),
+                            ft.Text(
+                                f"Cor: {item.get('cor', '')}", size=15, color=text_color
+                            ),
                             ft.Text(
                                 f"Tamanho: {item.get('tamanho', '')}",
                                 size=15,
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Qtd: {item.get('quantidade', '')}",
                                 size=15,
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Descrição: {item.get('descricao', '')}",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Preço: R$ {float(item.get('preco', 0) or 0):.2f}",
                                 size=14,
+                                color=text_color,
                             ),
                         ],
                         spacing=2,

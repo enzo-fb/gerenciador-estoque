@@ -109,7 +109,12 @@ def update_select_view(on_voltar, produtos, on_editar):
 
     view = ft.Column(
         [
-            ft.Text("Selecione um item para atualizar", size=24, weight="bold"),
+            ft.Text(
+                "Selecione um item para atualizar",
+                size=24,
+                weight="bold",
+                text_align=ft.TextAlign.CENTER,
+            ),
             lista,
             ft.ElevatedButton("Voltar", on_click=on_voltar, width=300, height=50),
         ],

@@ -155,14 +155,7 @@ def remover_produto_por_codigo(codigo):
 
 
 def marcar_como_vendido_controller(produto_id, quantidade_vendida, preco_venda):
-    """
-    Controla a lógica de venda de um produto, atualizando ou movendo-o.
 
-    Args:
-        produto_id (int): O ID único do produto a ser vendido.
-        quantidade_vendida (int): A quantidade de itens vendidos.
-        preco_venda (float): O preço total da venda.
-    """
     try:
         with closing(sqlite3.connect(DB_PATH)) as conn:
             c = conn.cursor()
@@ -187,12 +180,8 @@ def marcar_como_vendido_controller(produto_id, quantidade_vendida, preco_venda):
 
             # 2. Insere o registro na tabela de vendas
             # Obter data/hora de Brasília
-            try:
-                tz = ZoneInfo("America/Sao_Paulo")
-            except Exception:
-                import pytz
 
-                tz = pytz.timezone("America/Sao_Paulo")
+            tz = ZoneInfo("America/Sao_Paulo")
             now = datetime.now(tz)
             data_venda = now.strftime("%d-%m-%Y")
             hora_venda = now.strftime("%H:%M:%S")
