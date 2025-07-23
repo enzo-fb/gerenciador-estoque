@@ -12,6 +12,7 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "estoque.db")
 
 
 def init_db():
+    print("Inicializando banco e criando tabelas se necessário...")
     with closing(sqlite3.connect(DB_PATH)) as conn:
         c = conn.cursor()
         c.execute(
@@ -83,30 +84,41 @@ def adicionar_produto(produto):
 
 
 def listar_produtos(filtro=None, vendidos=None):
+    """
+    Lista produtos do banco de dados com filtros opcionais.
+
+    Args:
+        filtro (str, optional): Termo para buscar em várias colunas. Defaults to None.
+        vendidos (bool, optional): True para listar apenas vendidos, False para não vendidos,
+                                  None para listar todos. Defaults to None.
+    """
+    # Usar a 'row_factory' é a forma moderna e segura de obter dicionários
     with closing(sqlite3.connect(DB_PATH)) as conn:
+        conn.row_factory = (
+            sqlite3.Row
+        )  # Transforma cada linha em um objeto tipo dicionário
         c = conn.cursor()
-        query = "SELECT * FROM produtos WHERE 1=1"
+
+        query = "SELECT id, codigo, tipo, quantidade, cor, tamanho, preco, descricao, foto FROM produtos WHERE 1=1"
         params = []
+
+        # Lógica para o filtro de texto (já estava correta)
         if filtro:
             query += " AND (id LIKE ? OR codigo LIKE ? OR tipo LIKE ? OR cor LIKE ? OR tamanho LIKE ? OR descricao LIKE ?)"
             filtro_val = f"%{filtro}%"
-            params += [filtro_val] * 6
+            params.extend([filtro_val] * 6)  # Usar extend é uma boa prática
+
+        # --- LÓGICA IMPLEMENTADA PARA 'vendidos' ---
+        # Assumindo que a tabela 'produtos' tem uma coluna 'data_venda'
+        # que é NULL se o produto não foi vendido.
+        if vendidos is True:
+            query += " AND data_venda IS NOT NULL"
+        elif vendidos is False:
+            query += " AND data_venda IS NULL"
+
         c.execute(query, params)
-        rows = c.fetchall()
-        return [
-            dict(
-                id=row[0],
-                codigo=row[1],
-                tipo=row[2],
-                quantidade=row[3],
-                cor=row[4],
-                tamanho=row[5],
-                preco=row[6],
-                descricao=row[7],
-                foto=row[8],  # Isso será um BLOB
-            )
-            for row in rows
-        ]
+        # O retorno já será uma lista de "Rows" que se comportam como dicionários
+        return [dict(row) for row in c.fetchall()]
 
 
 def listar_produtos_vendidos():
@@ -237,3 +249,51 @@ def salvar_blob_em_arquivo(blob, ext=".jpg"):
     with open(path, "wb") as f:
         f.write(blob)
     return path
+
+
+def atualizar_item_controller(item):
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        cursor = conn.cursor()
+        foto_path = item.get("foto")
+        # Se for um caminho de arquivo, atualiza a foto
+        if foto_path and isinstance(foto_path, str) and os.path.exists(foto_path):
+            with open(foto_path, "rb") as f:
+                foto_blob = f.read()
+            cursor.execute(
+                """
+                UPDATE produtos
+                SET id=?, codigo=?, quantidade=?, preco=?, cor=?, tamanho=?, descricao=?, foto=?
+                WHERE id=?
+                """,
+                (
+                    item.get("id"),
+                    item.get("codigo"),
+                    item.get("quantidade"),
+                    item.get("preco"),
+                    item.get("cor"),
+                    item.get("tamanho"),
+                    item.get("descricao"),
+                    foto_blob,
+                    item.get("id"),
+                ),
+            )
+        else:
+            # Não atualiza o campo foto
+            cursor.execute(
+                """
+                UPDATE produtos
+                SET id=?, codigo=?, quantidade=?, preco=?, cor=?, tamanho=?, descricao=?
+                WHERE id=?
+                """,
+                (
+                    item.get("id"),
+                    item.get("codigo"),
+                    item.get("quantidade"),
+                    item.get("preco"),
+                    item.get("cor"),
+                    item.get("tamanho"),
+                    item.get("descricao"),
+                    item.get("id"),
+                ),
+            )
+        conn.commit()

@@ -93,55 +93,98 @@ def sale_details_view(item_data, on_confirm, on_cancel):
 
     # Bloco principal de conteúdo, centralizado na tela
     content_block = ft.Column(
-        [
-            ft.Text(
-                f"Vender: {item_data.get('tipo') +' - '+ item_data.get('id')}",
-                size=24,
-                color=ft.Colors.WHITE,
-                weight="bold",
+        spacing=15,  # Espaçamento geral entre os cards
+        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza o conteúdo
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
+        controls=[
+            # --- CARD 1: Informações do Produto ---
+            ft.Card(
+                elevation=4,
+                content=ft.Container(
+                    padding=20,
+                    border_radius=ft.border_radius.all(10),
+                    content=ft.Column(
+                        spacing=10,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Text(
+                                f"{item_data.get('tipo', '')}",
+                                size=16,
+                                color=ft.Colors.WHITE70,
+                                weight="w400",
+                            ),
+                            ft.Text(
+                                f"ID: {item_data.get('id', '')}",
+                                size=22,
+                                color=ft.Colors.WHITE,
+                                weight="bold",
+                            ),
+                            ft.Divider(height=5, color=ft.Colors.WHITE24),
+                            ft.Text(
+                                f"Disponível: {quantidade_disponivel} unidade(s)",
+                                size=14,
+                                color=ft.Colors.WHITE,
+                            ),
+                            ft.Text(
+                                f"Descrição: {item_data.get('descricao', 'N/A')}",
+                                size=14,
+                                italic=True,
+                                color=ft.Colors.WHITE70,  # Cor mais suave para detalhes
+                            ),
+                        ],
+                    ),
+                ),
             ),
-            ft.Text(
-                f"Qtd. Disponível: {quantidade_disponivel}",
-                size=16,
-                color=ft.Colors.WHITE,
+            # --- CARD 2: Ação de Venda ---
+            ft.Card(
+                elevation=4,
+                content=ft.Container(
+                    padding=20,
+                    border_radius=ft.border_radius.all(10),
+                    content=ft.Column(
+                        spacing=15,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            # Usando a propriedade 'label' dos campos, fica mais limpo
+                            quantidade_row,  # Assumindo que já tem um label
+                            preco_field,  # Assumindo que já tem um label
+                        ],
+                    ),
+                ),
             ),
-            ft.Text(
-                f"Descrição: {item_data.get('descricao', 'N/A')}",
-                size=14,
-                color=ft.Colors.WHITE,
-            ),
-            ft.Divider(height=20, color=ft.Colors.WHITE24),
-            ft.Text("Quantidade vendida:", size=16, color=ft.Colors.WHITE),
-            quantidade_row,
-            ft.Text("Preço da venda:", size=16, color=ft.Colors.WHITE),
-            preco_field,
-            ft.Container(height=30),  # Espaço para separar os botões
+            # --- Botões de Ação ---
             ft.Row(
-                [
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
+                controls=[
+                    # Botão secundário (Cancelar) com estilo diferente
+                    ft.OutlinedButton(
+                        text="Cancelar",
+                        icon=ft.Icons.CANCEL_OUTLINED,
+                        on_click=on_cancel,
+                        width=150,
+                        height=50,
+                    ),
+                    # Botão principal (Confirmar) com mais destaque
                     ft.ElevatedButton(
-                        "Confirmar venda",
+                        text="Confirmar Venda",
+                        icon=ft.Icons.SHOPPING_CART_CHECKOUT,
                         on_click=confirmar_venda,
                         bgcolor=ft.Colors.GREEN_700,
                         color=ft.Colors.WHITE,
-                    ),
-                    ft.ElevatedButton(
-                        "Cancelar",
-                        on_click=on_cancel,
-                        bgcolor=ft.Colors.RED_700,
-                        color=ft.Colors.WHITE,
+                        width=180,  # Um pouco maior para dar mais importância
+                        height=50,
                     ),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER,
             ),
         ],
-        alignment=ft.MainAxisAlignment.CENTER,  # Alinha o bloco na vertical
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Alinha os elementos do bloco na horizontal
-        spacing=30,  # Espaçamento entre os elementos do bloco
+        expand=True,  # Garante que a coluna ocupe todo o espaço disponível
+        width=350,
     )
 
-    # A função retorna apenas o bloco centralizado
+    # Centraliza toda a tela verticalmente e horizontalmente
     return ft.Container(
         content=content_block,
-        alignment=ft.alignment.center,  # Alinha o container na vertical e horizontal
+        alignment=ft.alignment.center,  # Centraliza o container na tela
         expand=True,
     )

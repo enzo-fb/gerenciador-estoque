@@ -2,25 +2,14 @@ import flet as ft
 import base64
 
 
-def select_for_sale_view(on_voltar, on_listar, on_vender):
+def update_select_view(on_voltar, produtos, on_editar):
+    items = []
 
-    # Armazena todos os produtos em uma variável para podermos filtrar
-    todos_os_produtos = on_listar()
-    item_column = ft.Column(
-        [],
-        alignment=ft.MainAxisAlignment.START,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=0,
-        scroll=ft.ScrollMode.AUTO,
-        expand=True,
-    )
-
-    # --- FUNÇÃO QUE CRIA O CARD DE ITEM COM BOTÃO DE VENDER ---
+    # --- A FUNÇÃO item_card PERMANECE EXATAMENTE IGUAL ---
     def item_card(item):
         foto = item.get("foto")
         foto_ctrl = None
 
-        # Lógica para exibir a imagem (igual à sua)
         if isinstance(foto, bytes) and foto:
             foto_base64 = base64.b64encode(foto).decode("utf-8")
             foto_ctrl = ft.Image(
@@ -68,9 +57,8 @@ def select_for_sale_view(on_voltar, on_listar, on_vender):
                                 color="#000000",
                             ),
                             ft.Text(
-                                f"Qtd em Estoque: {item.get('quantidade', '')}",
+                                f"Qtd: {item.get('quantidade', '')}",
                                 size=15,
-                                weight="bold",
                                 color="#000000",
                             ),
                             ft.Text(
@@ -78,87 +66,61 @@ def select_for_sale_view(on_voltar, on_listar, on_vender):
                                 size=14,
                                 color="#000000",
                             ),
+                            ft.Text(
+                                f"Descrição: {item.get('descricao', '')}",
+                                color="#000000",
+                                size=14,
+                                max_lines=2,
+                                overflow=ft.TextOverflow.ELLIPSIS,
+                            ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
-                        spacing=5,
+                        spacing=2,
                         expand=True,
                     ),
-                    # Ícone de venda posicionado à direita e maior
                     ft.Column(
                         [
                             ft.IconButton(
-                                icon=ft.Icons.MONETIZATION_ON_OUTLINED,
-                                icon_color=ft.Colors.GREEN_700,
-                                tooltip="Vender este item",
-                                icon_size=65,  # Tamanho do ícone bastante aumentado
-                                on_click=lambda e, item=item: on_vender(item),
-                            ),
+                                icon=ft.Icons.EDIT_NOTE_ROUNDED,
+                                icon_color=ft.Colors.ORANGE_700,
+                                icon_size=40,
+                                tooltip="Editar este item",
+                                on_click=lambda e: on_editar(item),
+                            )
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.START,
             ),
-            padding=20,
+            padding=16,
             margin=ft.margin.symmetric(vertical=8),
             bgcolor="#f5f5f5",
             border_radius=12,
             shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
             width=500,
-            on_click=lambda e: print(f"Você clicou no item de ID: {item.get('id')}"),
         )
 
-    # Lógica de atualização e filtragem, similar à sua
-    def update_items():
-        termo = search_field.value.lower() if search_field.value else ""
+    # A lista é construída aqui, de forma síncrona
+    for produto in produtos:
+        items.append(item_card(produto))
 
-        filtered = [
-            item
-            for item in todos_os_produtos
-            if termo in item.get("id", "").lower()
-            or termo in item.get("tipo", "").lower()
-            or termo in item.get("cor", "").lower()
-            or termo in item.get("tamanho", "").lower()
-        ]
+    lista = ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True)
 
-        item_column.controls.clear()
-        if not filtered:
-            item_column.controls.append(
-                ft.Text("Nenhum item encontrado.", color=ft.Colors.RED, size=18)
-            )
-        else:
-            for item in filtered:
-                item_column.controls.append(item_card(item))
-        # item_column.update()  # Remover esta linha!
-
-    # Campos de busca
-    search_field = ft.TextField(
-        label="Buscar por código, cor, tipo...",
-        width=400,
-        prefix_icon=ft.Icons.SEARCH,
-        on_change=lambda e: update_items(),
-    )
-
-    # Preenche a lista inicialmente
-    update_items()
-
-    return ft.Column(
+    view = ft.Column(
         [
-            ft.Text("Selecione um item para vender", size=24, weight="bold"),
-            search_field,
-            ft.Divider(),
-            item_column,
-            ft.ElevatedButton(
-                "Voltar",
-                on_click=on_voltar,
-                width=300,
-                height=50,
-                color=ft.Colors.WHITE,
-                bgcolor=ft.Colors.BLUE_GREY,
-            ),
+            ft.Text("Selecione um item para atualizar", size=24, weight="bold"),
+            lista,
+            ft.ElevatedButton("Voltar", on_click=on_voltar, width=300, height=50),
         ],
-        alignment=ft.MainAxisAlignment.START,
+        alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=20,
         expand=True,
     )
+
+    container = ft.SafeArea(
+        ft.Container(view, alignment=ft.alignment.center, padding=16), expand=True
+    )
+
+    # Não há mais on_mount nem função de retorno para atualizar a lista
+    return container

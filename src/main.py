@@ -8,8 +8,12 @@ from views.sucess import success_view
 from views.confirm import confirm_view
 from views.sell_item_view import sale_details_view  # Adicione este import
 from views.select_for_sale_view import select_for_sale_view
+from views.update_item_view import update_item_view
+from views.update_select_view import update_select_view
+from views.update_sucess import success_view as update_success_view
 from models.data import (
     marcar_como_vendido_controller,
+    atualizar_item_controller,
 )  # Comentei/removi se não estiver em uso para src_base64
 from controllers.controller import (
     inicializar_banco,
@@ -149,37 +153,58 @@ def main(page: ft.Page):
         page.controls.append(view_content)
         page.update()
 
-    def go_to_update_form(e: ft.ControlEvent):
-        item_selecionado = e.control.data
-        page = e.control.page
+    def go_to_update_form(item_selecionado):
+        def salvar_atualizacao(novo_item):
+            atualizar_item_controller(novo_item)
+            show_update_success_screen()
 
-        print(
-            f"Navegando para o formulário de atualização do item: {item_selecionado.get('id')}"
-        )
-        # AQUI VAI A LÓGICA PARA ABRIR A TELA DE ATUALIZAÇÃO
-        # Por enquanto, vamos apenas voltar ao menu como placeholder.
+        def show_update_success_screen():
+            def atualizar_mais(e=None):
+                go_to_update_item()
+
+            def voltar_menu(e=None):
+                go_to_menu()
+
+            page.controls.clear()
+            page.controls.append(
+                update_success_view(
+                    on_add_another=atualizar_mais,
+                    on_voltar_menu=voltar_menu,
+                )
+            )
+            page.update()
+
         page.controls.clear()
-        # No futuro, aqui chamaremos a update_item_view, passando o item_selecionado
         page.controls.append(
-            ft.Text(
-                f"TELA DE ATUALIZAÇÃO PARA O ITEM {item_selecionado.get('id')}",
-                size=30,
+            update_item_view(
+                item_data=item_selecionado,
+                on_salvar=salvar_atualizacao,
+                on_voltar=go_to_update_item,
             )
         )
-        page.controls.append(ft.ElevatedButton("Voltar", on_click=go_to_menu))
         page.update()
 
     def go_to_update_item(e=None):
-        page = e.page if e else page
         page.controls.clear()
 
-        # O botão de edição não será passado para consult_item_view
-        view_content = consult_item_view(
+        def on_editar(item):
+            go_to_update_form(item)
+
+        # 1. Primeiro, busca todos os produtos
+        produtos = listar_produtos_controller()
+
+        # 2. Constrói a view passando a lista de produtos já carregada
+        view_content = update_select_view(
             on_voltar=go_to_menu,
-            on_listar=listar_produtos_controller,
+            produtos=produtos,  # Passa a lista de produtos
+            on_editar=on_editar,
         )
+
+        # 3. Adiciona a view à página e atualiza UMA ÚNICA VEZ
         page.controls.append(view_content)
         page.update()
+
+        # A função de atualização agora não existe mais e o problema de timing é eliminado
 
     def go_to_menu(e=None):
         page.controls.clear()
