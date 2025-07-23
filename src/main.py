@@ -140,6 +140,21 @@ def main(page: ft.Page):
         page.update()
         update_consult_func()
 
+    def go_to_select_for_sale(e=None):
+        # Use sempre a variável 'page' do escopo principal
+        page.controls.clear()
+
+        def on_vender(item):
+            go_to_sale_details(item)
+
+        view_content = select_for_sale_view(
+            on_voltar=go_to_menu,
+            on_listar=listar_produtos_controller,
+            on_vender=on_vender,
+        )
+        page.controls.append(view_content)
+        page.update()
+
     def go_to_sale_details(item_selecionado):
         def handle_sale_cancel(e_cancel=None):
             go_to_select_for_sale()
@@ -149,6 +164,7 @@ def main(page: ft.Page):
                 marcar_como_vendido_controller(
                     item_selecionado, quantidade_vendida, preco_venda
                 )
+                page.update()
                 go_to_select_for_sale()
 
             def cancelar_venda_final(e=None):
@@ -173,21 +189,6 @@ def main(page: ft.Page):
             on_cancel=handle_sale_cancel,
         )
         page.controls.append(sale_page)
-        page.update()
-
-    def go_to_select_for_sale(e=None):
-        # Use sempre a variável 'page' do escopo principal
-        page.controls.clear()
-
-        def on_vender(item):
-            go_to_sale_details(item)
-
-        view_content = select_for_sale_view(
-            on_voltar=go_to_menu,
-            on_listar=listar_produtos_controller,
-            on_vender=on_vender,
-        )
-        page.controls.append(view_content)
         page.update()
 
     def go_to_update_form(item_selecionado):

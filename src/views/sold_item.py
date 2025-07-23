@@ -154,7 +154,9 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
         if filtered:
             for item in filtered:
                 items_column.controls.append(item_card(item))
-                saldo += float(item.get("preco", 0) or 0)
+                saldo += float(item.get("preco", 0) or 0) * int(
+                    item.get("quantidade", 1) or 1
+                )
         else:
             items_column.controls.append(
                 ft.Text("Nenhum item vendido encontrado.", size=18)
@@ -199,16 +201,6 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
         padding=20,
         expand=True,
         alignment=ft.alignment.center,
-    )
-
-    def on_mount(e):
-        update_items()
-
-    container.on_mount = on_mount
-
-    return (
-        ft.SafeArea(container, expand=True),
-        update_items,
     )
 
     def on_mount(e):

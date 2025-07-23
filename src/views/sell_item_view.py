@@ -15,7 +15,7 @@ def sale_details_view(item_data, on_confirm, on_cancel):
     )
 
     preco_field = ft.TextField(
-        label="Valor da venda",
+        label="Valor unitário (R$)",
         value=str(item_data.get("preco", "")),
         keyboard_type=ft.KeyboardType.NUMBER,
         width=200,
@@ -30,7 +30,7 @@ def sale_details_view(item_data, on_confirm, on_cancel):
         try:
             valor_atual = int(quantidade_field.value)
             if valor_atual > 0:
-                quantidade_field.value = str(valor_atual - 1)
+                quantidade_field.value = int(valor_atual - 1)
                 e.page.update()
         except ValueError:
             quantidade_field.value = "0"
@@ -40,7 +40,7 @@ def sale_details_view(item_data, on_confirm, on_cancel):
         try:
             valor_atual = int(quantidade_field.value)
             if valor_atual < quantidade_disponivel:
-                quantidade_field.value = str(valor_atual + 1)
+                quantidade_field.value = int(valor_atual + 1)
                 e.page.update()
         except ValueError:
             quantidade_field.value = "1"
