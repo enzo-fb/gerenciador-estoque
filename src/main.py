@@ -6,13 +6,17 @@ from views.consult_item import consult_item_view
 from views.sold_item import sold_item_view
 from views.sucess import success_view
 from views.confirm import confirm_view
+from views.sell_item_view import sale_details_view  # Adicione este import
+from views.select_for_sale_view import select_for_sale_view
+from models.data import (
+    marcar_como_vendido_controller,
+)  # Comentei/removi se não estiver em uso para src_base64
 from controllers.controller import (
     inicializar_banco,
     adicionar_produto_controller,
     listar_produtos_controller,
     listar_produtos_vendidos_controller,
     remover_produto_controller,
-    marcar_como_vendido_controller,
 )
 
 
@@ -106,29 +110,21 @@ def main(page: ft.Page):
         page.update()
         update_consult_func()
 
-    def go_to_sale_details(e: ft.ControlEvent):
-        item_selecionado = e.control.data
-
+    def go_to_sale_details(item_selecionado):
         def handle_sale_confirmation(quantidade_vendida, preco_venda):
-            estoque_atual = int(item_selecionado.get("quantidade", 0))
-            novo_estoque = estoque_atual - quantidade_vendida
 
             item_vendido_data = item_selecionado.copy()
             item_vendido_data["quantidade"] = quantidade_vendida
             item_vendido_data["preco_venda"] = preco_venda
-            adicionar_item_vendido_controller(item_vendido_data)
-
-            if novo_estoque > 0:
-                atualizar_estoque_controller(item_selecionado["id"], novo_estoque)
-            else:
-                remover_produto_controller(item_selecionado["id"])
+            marcar_como_vendido_controller(
+                item_vendido_data["id"], quantidade_vendida, preco_venda
+            )
 
             go_to_select_for_sale()
 
         def handle_sale_cancel(e_cancel=None):
             go_to_select_for_sale()
 
-        page = e.control.page  # Pega a referência da página
         page.controls.clear()
         sale_page = sale_details_view(
             item_data=item_selecionado,
@@ -139,66 +135,48 @@ def main(page: ft.Page):
         page.update()
 
     def go_to_select_for_sale(e=None):
-        page = e.page if e else page  # Pega a referência da página
+        # Use sempre a variável 'page' do escopo principal
         page.controls.clear()
 
-        def build_sell_button(item_data):
-            return ft.IconButton(
-                icon=ft.icons.MONETIZATION_ON_OUTLINED,
-                icon_color=ft.colors.GREEN_700,
-                tooltip="Vender este item",
-                data=item_data,
-                on_click=go_to_sale_details,
-            )
+        def on_vender(item):
+            go_to_sale_details(item)
 
-        # Reutilizando a consult_item_view para listar os itens
-        view_content = consult_item_view(
-            page=page,
+        view_content = select_for_sale_view(
             on_voltar=go_to_menu,
             on_listar=listar_produtos_controller,
-            item_action_builder=build_sell_button,
+            on_vender=on_vender,
         )
         page.controls.append(view_content)
         page.update()
 
-        def go_to_update_form(e: ft.ControlEvent):
-            item_selecionado = e.control.data
-            page = e.control.page
+    def go_to_update_form(e: ft.ControlEvent):
+        item_selecionado = e.control.data
+        page = e.control.page
 
-            print(
-                f"Navegando para o formulário de atualização do item: {item_selecionado.get('id')}"
+        print(
+            f"Navegando para o formulário de atualização do item: {item_selecionado.get('id')}"
+        )
+        # AQUI VAI A LÓGICA PARA ABRIR A TELA DE ATUALIZAÇÃO
+        # Por enquanto, vamos apenas voltar ao menu como placeholder.
+        page.controls.clear()
+        # No futuro, aqui chamaremos a update_item_view, passando o item_selecionado
+        page.controls.append(
+            ft.Text(
+                f"TELA DE ATUALIZAÇÃO PARA O ITEM {item_selecionado.get('id')}",
+                size=30,
             )
-            # AQUI VAI A LÓGICA PARA ABRIR A TELA DE ATUALIZAÇÃO
-            # Por enquanto, vamos apenas voltar ao menu como placeholder.
-            page.controls.clear()
-            # No futuro, aqui chamaremos a update_item_view, passando o item_selecionado
-            page.controls.append(
-                ft.Text(
-                    f"TELA DE ATUALIZAÇÃO PARA O ITEM {item_selecionado.get('id')}",
-                    size=30,
-                )
-            )
-            page.controls.append(ft.ElevatedButton("Voltar", on_click=go_to_menu))
-            page.update()
+        )
+        page.controls.append(ft.ElevatedButton("Voltar", on_click=go_to_menu))
+        page.update()
 
     def go_to_update_item(e=None):
         page = e.page if e else page
         page.controls.clear()
 
-        def build_edit_button(item_data):
-            return ft.IconButton(
-                icon=ft.Icons.EDIT_NOTE_ROUNDED,
-                icon_color=ft.Colors.ORANGE_700,
-                tooltip="Editar este item",
-                data=item_data,
-                on_click=go_to_update_form,
-            )
-
+        # O botão de edição não será passado para consult_item_view
         view_content = consult_item_view(
-            page=page,
             on_voltar=go_to_menu,
             on_listar=listar_produtos_controller,
-            item_action_builder=build_edit_button,
         )
         page.controls.append(view_content)
         page.update()

@@ -67,14 +67,3 @@ def listar_produtos_vendidos_controller(filtro=None):
 
 def remover_produto_controller(codigo):
     data.remover_produto_por_codigo(codigo)
-
-
-def marcar_como_vendido_controller(codigo):
-    data.marcar_como_vendido(codigo)
-    # Não coloque prints, chamadas duplicadas, ou comentários de debug aqui!
-    # Remova qualquer chamada duplicada ou print!
-    # Nenhum print ou chamada extra aqui.
-    data.marcar_como_vendido(codigo)
-
-    vendidos = data.listar_produtos_vendidos()
-    print(f"Agora temos {len(vendidos)} itens vendidos no banco")

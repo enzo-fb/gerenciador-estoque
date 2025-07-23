@@ -66,6 +66,12 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
                                 color="#000000",
                             ),
                             ft.Text(
+                                f"Código de Venda: {item.get('id_venda', '')}",
+                                weight="bold",
+                                size=16,
+                                color="#000000",
+                            ),
+                            ft.Text(
                                 f"Tipo: {item.get('tipo', '')}",
                                 size=15,
                                 color="#000000",
@@ -117,7 +123,8 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
             padding=16,
             margin=ft.margin.symmetric(vertical=10),
             border_radius=12,
-            shadow=ft.BoxShadow(blur_radius=8, color="#cccccc", offset=ft.Offset(2, 2)),
+            border=ft.border.all(2, "#cccccc"),  # Adiciona borda sólida
+            bgcolor="#ffffff",  # Fundo branco
             width=420,
         )
 
