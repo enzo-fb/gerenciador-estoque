@@ -64,6 +64,7 @@ def sale_details_view(item_data, on_confirm, on_cancel):
                 return
 
             on_confirm(quantidade_vendida, preco_venda)
+            e.page.update()  # Garante atualização da tela após confirmar venda
         except ValueError:
             e.page.snack_bar = ft.SnackBar(
                 ft.Text("Valores inválidos nos campos!"), open=True

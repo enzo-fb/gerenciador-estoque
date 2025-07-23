@@ -142,23 +142,34 @@ def select_for_sale_view(on_voltar, on_listar, on_vender):
     # Preenche a lista inicialmente
     update_items()
 
-    return ft.Column(
-        [
-            ft.Text("Selecione um item para vender", size=24, weight="bold"),
-            search_field,
-            ft.Divider(),
-            item_column,
-            ft.ElevatedButton(
-                "Voltar",
-                on_click=on_voltar,
-                width=300,
-                height=50,
-                color=ft.Colors.WHITE,
-                bgcolor=ft.Colors.BLUE_GREY,
-            ),
-        ],
-        alignment=ft.MainAxisAlignment.START,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=20,
+    # Centraliza o conteúdo na tela
+    return ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(
+                    "Selecione um item para vender",
+                    size=24,
+                    weight="bold",
+                    text_align=ft.TextAlign.CENTER,
+                ),
+                search_field,
+                ft.Divider(),
+                item_column,
+                ft.ElevatedButton(
+                    "Voltar",
+                    on_click=on_voltar,
+                    width=300,
+                    height=50,
+                    color=ft.Colors.WHITE,
+                    bgcolor=ft.Colors.BLUE_GREY,
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.START,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20,
+            expand=True,
+        ),
+        alignment=ft.alignment.center,
         expand=True,
+        padding=30,  # Opcional: espaçamento interno
     )

@@ -115,7 +115,11 @@ def main(page: ft.Page):
         update_consult_func()
 
     def go_to_sale_details(item_selecionado):
+        # Ajuste: recebe dois argumentos diretamente
         def handle_sale_confirmation(quantidade_vendida, preco_venda):
+            if quantidade_vendida is None or preco_venda is None:
+                print("Dados de venda não encontrados!")
+                return
 
             item_vendido_data = item_selecionado.copy()
             item_vendido_data["quantidade"] = quantidade_vendida
@@ -123,7 +127,6 @@ def main(page: ft.Page):
             marcar_como_vendido_controller(
                 item_vendido_data["id"], quantidade_vendida, preco_venda
             )
-
             go_to_select_for_sale()
 
         def handle_sale_cancel(e_cancel=None):
@@ -132,7 +135,7 @@ def main(page: ft.Page):
         page.controls.clear()
         sale_page = sale_details_view(
             item_data=item_selecionado,
-            on_confirm=handle_sale_confirmation,
+            on_confirm=handle_sale_confirmation,  # Agora recebe dois argumentos
             on_cancel=handle_sale_cancel,
         )
         page.controls.append(sale_page)
