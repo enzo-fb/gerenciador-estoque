@@ -55,7 +55,6 @@ def home_view(
                         value=button_info["text"],
                         size=16,
                         weight="bold",
-                        color=ft.Colors.WHITE,
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -111,9 +110,7 @@ def home_view(
             content=ft.Column(
                 [
                     ft.Image(src="splash_android.png", width=160, height=160),
-                    ft.Text(
-                        "Controle de Estoque", size=32, weight="bold", color="#ffffff"
-                    ),
+                    ft.Text("Controle de Estoque", size=32, weight="bold"),
                     ft.Container(height=20),
                     button_layout,
                 ],

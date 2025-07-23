@@ -127,6 +127,9 @@ def consult_item_view(
                 fit=ft.ImageFit.COVER,
             )
 
+        # Força cor preta nos textos dos cards para melhor leitura no dark theme
+        text_color = "#000000"
+
         return ft.Container(
             content=ft.Row(
                 [
@@ -145,29 +148,29 @@ def consult_item_view(
                                 f"Código: {item.get('id', '')}",
                                 weight="bold",
                                 size=16,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Tipo: {item.get('tipo', '')}",
                                 size=15,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
-                                f"Cor: {item.get('cor', '')}", size=15, color="#000000"
+                                f"Cor: {item.get('cor', '')}", size=15, color=text_color
                             ),
                             ft.Text(
                                 f"Tamanho: {item.get('tamanho', '')}",
                                 size=15,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Qtd: {item.get('quantidade', '')}",
                                 size=15,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Descrição: {item.get('descricao', '')}",
-                                color="#000000",
+                                color=text_color,
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
@@ -175,9 +178,8 @@ def consult_item_view(
                             ft.Text(
                                 f"Preço: R$ {float(item.get('preco', 0) or 0):.2f}",
                                 size=14,
-                                color="#000000",
+                                color=text_color,
                             ),
-                            # --- O BOTÃO "Marcar como vendido" FOI REMOVIDO DAQUI ---
                         ],
                         alignment=ft.MainAxisAlignment.START,
                         spacing=2,
@@ -217,9 +219,7 @@ def consult_item_view(
                 filtered.append(item)
         item_column.controls.clear()
         if not filtered:
-            item_column.controls.append(
-                ft.Text("Nenhum item encontrado.", color="red", size=18)
-            )
+            item_column.controls.append(ft.Text("Nenhum item encontrado.", size=18))
         else:
             for item in filtered:
                 item_column.controls.append(item_card(item))
@@ -239,9 +239,7 @@ def consult_item_view(
         ft.Container(
             ft.Column(
                 [
-                    ft.Text(
-                        "Consultar Estoque", size=28, weight="bold", color="#ffffff"
-                    ),
+                    ft.Text("Consultar Estoque", size=28, weight="bold"),
                     search_field,
                     ft.Row(
                         [min_value_field, max_value_field],

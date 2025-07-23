@@ -45,6 +45,10 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
                 height=300,
                 fit=ft.ImageFit.COVER,
             )
+
+        # Força cor preta nos textos dos cards para melhor leitura no dark theme
+        text_color = "#000000"
+
         return ft.Container(
             content=ft.Row(
                 [
@@ -63,53 +67,53 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
                                 f"Código: {item.get('id', '')}",
                                 weight="bold",
                                 size=16,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Código de Venda: {item.get('id_venda', '')}",
                                 weight="bold",
                                 size=16,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Tipo: {item.get('tipo', '')}",
                                 size=15,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
-                                f"Cor: {item.get('cor', '')}", size=15, color="#000000"
+                                f"Cor: {item.get('cor', '')}", size=15, color=text_color
                             ),
                             ft.Text(
                                 f"Tamanho: {item.get('tamanho', '')}",
                                 size=15,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Qtd: {item.get('quantidade', '')}",
                                 size=15,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Preço: R$ {float(item.get('preco', 0) or 0):.2f}",
                                 size=14,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Data: {item.get('data_venda', '')}",
                                 size=14,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Hora: {item.get('hora_venda', '')}",
                                 size=14,
-                                color="#000000",
+                                color=text_color,
                             ),
                             ft.Text(
                                 f"Descrição: {item.get('descricao', '')}",
                                 size=14,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS,
-                                color="#000000",
+                                color=text_color,
                             ),
                         ],
                         spacing=5,
@@ -153,7 +157,7 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
                 saldo += float(item.get("preco", 0) or 0)
         else:
             items_column.controls.append(
-                ft.Text("Nenhum item vendido encontrado.", color="red", size=18)
+                ft.Text("Nenhum item vendido encontrado.", size=18)
             )
         contador_saldo_vendidos.value = f"Saldo total de itens vendidos: R$ {saldo:.2f}"
         contador.update()
@@ -195,6 +199,16 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
         padding=20,
         expand=True,
         alignment=ft.alignment.center,
+    )
+
+    def on_mount(e):
+        update_items()
+
+    container.on_mount = on_mount
+
+    return (
+        ft.SafeArea(container, expand=True),
+        update_items,
     )
 
     def on_mount(e):

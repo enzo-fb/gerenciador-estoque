@@ -86,13 +86,12 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         bgcolor="#ffffff",
         label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
     )
-    foto_path = ft.Text("", size=14, color="#666666")
+    foto_path = ft.Text("", size=14)
     foto_real_path = [None]  # Usado para armazenar o caminho real do arquivo
 
     instrucoes_camera = ft.Text(
         "Use o aplicativo de câmera do seu dispositivo para tirar a foto e depois clique em 'Adicionar Foto' para selecionar.",
         size=12,
-        color="#888888",
         italic=True,
         text_align=ft.TextAlign.CENTER,
     )
@@ -226,9 +225,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         ft.Container(
             ft.Column(
                 [
-                    ft.Text(
-                        "Adicionar Novo Item", size=28, weight="bold", color="#ffffff"
-                    ),
+                    ft.Text("Adicionar Novo Item", size=28, weight="bold"),
                     ft.Row(
                         [
                             tipo_selector,
@@ -262,4 +259,5 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
     return ft.Stack(
         [layout, file_picker], expand=True
     )  # Adicionado expand=True no Stack
+    return ft.Stack([layout, file_picker], expand=True)
     return ft.Stack([layout, file_picker], expand=True)

@@ -25,6 +25,31 @@ from controllers.controller import (
 
 
 def main(page: ft.Page):
+    page.theme_mode = "system"  # Adapta ao modo do sistema
+
+    # Tema claro
+    page.theme = ft.Theme(
+        color_scheme=ft.ColorScheme(
+            primary="#6495ED",  # Azul principal
+            background="#f5f5f5",  # Fundo geral claro
+            surface="#ffffff",  # Cards/branco
+            on_primary="#222222",  # Texto sobre botões
+            on_background="#222222",  # Texto sobre fundo
+            on_surface="#222222",  # Texto sobre cards
+        )
+    )
+    # Tema escuro
+    page.dark_theme = ft.Theme(
+        color_scheme=ft.ColorScheme(
+            primary="#6495ED",  # Azul principal
+            background="#222222",  # Fundo geral escuro
+            surface="#333333",  # Cards/cinza escuro
+            on_primary="#ffffff",  # Texto sobre botões
+            on_background="#ffffff",  # Texto sobre fundo
+            on_surface="#ffffff",  # Texto sobre cards
+        )
+    )
+
     inicializar_banco()  # Inicializa/cria o banco ao iniciar o app
 
     def go_to_new_item(e=None):

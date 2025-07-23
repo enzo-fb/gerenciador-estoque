@@ -9,8 +9,9 @@ def sale_details_view(item_data, on_confirm, on_cancel):
         width=80,
         text_align=ft.TextAlign.CENTER,
         keyboard_type=ft.KeyboardType.NUMBER,
-        border_color=ft.Colors.WHITE,  # Borda branca
-        color=ft.Colors.WHITE,  # Texto branco
+        # Remova border_color para usar do tema
+        # border_color=ft.Colors.WHITE,
+        # color=ft.Colors.WHITE,
     )
 
     preco_field = ft.TextField(
@@ -19,9 +20,10 @@ def sale_details_view(item_data, on_confirm, on_cancel):
         keyboard_type=ft.KeyboardType.NUMBER,
         width=200,
         text_align=ft.TextAlign.CENTER,
-        border_color=ft.Colors.WHITE,  # Borda branca
-        label_style=ft.TextStyle(color=ft.Colors.WHITE),
-        color=ft.Colors.WHITE,  # Texto branco
+        # Remova border_color para usar do tema
+        # border_color=ft.Colors.WHITE,
+        # label_style=ft.TextStyle(),  # Remova cor para usar do tema
+        # color=ft.Colors.WHITE,
     )
 
     def decrementar_quantidade(e):
@@ -78,14 +80,16 @@ def sale_details_view(item_data, on_confirm, on_cancel):
                 icon=ft.Icons.REMOVE,
                 on_click=decrementar_quantidade,
                 tooltip="Diminuir quantidade",
-                icon_color=ft.Colors.WHITE,
+                # Remova icon_color para usar do tema
+                # icon_color=ft.Colors.WHITE,
             ),
             quantidade_field,
             ft.IconButton(
                 icon=ft.Icons.ADD,
                 on_click=incrementar_quantidade,
                 tooltip="Aumentar quantidade",
-                icon_color=ft.Colors.WHITE,
+                # Remova icon_color para usar do tema
+                # icon_color=ft.Colors.WHITE,
             ),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
@@ -94,9 +98,9 @@ def sale_details_view(item_data, on_confirm, on_cancel):
 
     # Bloco principal de conteúdo, centralizado na tela
     content_block = ft.Column(
-        spacing=15,  # Espaçamento geral entre os cards
-        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza o conteúdo
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
+        spacing=15,
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         controls=[
             # --- CARD 1: Informações do Produto ---
             ft.Card(
@@ -111,26 +115,26 @@ def sale_details_view(item_data, on_confirm, on_cancel):
                             ft.Text(
                                 f"{item_data.get('tipo', '')}",
                                 size=16,
-                                color=ft.Colors.WHITE70,
                                 weight="w400",
+                                # Remova color para usar do tema
                             ),
                             ft.Text(
                                 f"ID: {item_data.get('id', '')}",
                                 size=22,
-                                color=ft.Colors.WHITE,
                                 weight="bold",
+                                # Remova color para usar do tema
                             ),
-                            ft.Divider(height=5, color=ft.Colors.WHITE24),
+                            ft.Divider(height=5),
                             ft.Text(
                                 f"Disponível: {quantidade_disponivel} unidade(s)",
                                 size=14,
-                                color=ft.Colors.WHITE,
+                                # Remova color para usar do tema
                             ),
                             ft.Text(
                                 f"Descrição: {item_data.get('descricao', 'N/A')}",
                                 size=14,
                                 italic=True,
-                                color=ft.Colors.WHITE70,  # Cor mais suave para detalhes
+                                # Remova color para usar do tema
                             ),
                         ],
                     ),
@@ -179,7 +183,7 @@ def sale_details_view(item_data, on_confirm, on_cancel):
                 ],
             ),
         ],
-        expand=True,  # Garante que a coluna ocupe todo o espaço disponível
+        expand=True,
         width=350,
     )
 

@@ -10,7 +10,6 @@ def success_view(on_add_another=None, on_voltar_menu=None):
                     "Item adicionado com sucesso!",
                     size=24,
                     weight="bold",
-                    color="#228B22",
                     text_align=ft.TextAlign.CENTER,
                 ),
                 ft.ElevatedButton(
