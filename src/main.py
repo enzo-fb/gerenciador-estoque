@@ -22,6 +22,7 @@ from controllers.controller import (
     listar_produtos_vendidos_controller,
     remover_produto_controller,
 )
+from views.confirm_sale import confirm_sale_view
 
 
 def main(page: ft.Page):
@@ -143,17 +144,33 @@ def main(page: ft.Page):
         def handle_sale_cancel(e_cancel=None):
             go_to_select_for_sale()
 
-        # Função direta, recebe quantidade_vendida e preco_venda
-        def on_confirm(quantidade_vendida, preco_venda):
-            marcar_como_vendido_controller(
-                item_selecionado["id"], quantidade_vendida, preco_venda
+        def handle_sale_confirm(quantidade_vendida, preco_venda):
+            # Mostra tela/modal de confirmação antes de registrar venda
+            def confirmar_venda_final(e=None):
+                marcar_como_vendido_controller(
+                    item_selecionado["id"], quantidade_vendida, preco_venda
+                )
+                go_to_select_for_sale()
+
+            def cancelar_venda_final(e=None):
+                go_to_select_for_sale()
+
+            page.controls.clear()
+            page.controls.append(
+                confirm_sale_view(
+                    item_data=item_selecionado,
+                    quantidade=quantidade_vendida,
+                    preco=preco_venda,
+                    on_confirm=confirmar_venda_final,
+                    on_cancel=cancelar_venda_final,
+                )
             )
-            go_to_select_for_sale()
+            page.update()
 
         page.controls.clear()
         sale_page = sale_details_view(
             item_data=item_selecionado,
-            on_confirm=on_confirm,  # Passa direto, sem wrapper
+            on_confirm=handle_sale_confirm,  # Agora chama a tela de confirmação
             on_cancel=handle_sale_cancel,
         )
         page.controls.append(sale_page)

@@ -124,7 +124,7 @@ def sold_item_view(on_voltar=None, on_listar_vendidos=None):
                 alignment=ft.MainAxisAlignment.START,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
-            padding=16,
+            padding=30,
             margin=ft.margin.symmetric(vertical=10),
             border_radius=12,
             border=ft.border.all(2, "#cccccc"),  # Adiciona borda sólida
