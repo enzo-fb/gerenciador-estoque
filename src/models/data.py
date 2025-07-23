@@ -11,44 +11,55 @@ except ImportError:
 DB_PATH = os.path.join(os.path.dirname(__file__), "estoque.db")
 
 
+def tabela_existe(nome_tabela):
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        c = conn.cursor()
+        c.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            (nome_tabela,),
+        )
+        return c.fetchone() is not None
+
+
 def init_db():
     print("Inicializando banco e criando tabelas se necessário...")
     with closing(sqlite3.connect(DB_PATH)) as conn:
         c = conn.cursor()
-        c.execute(
-            """
-            CREATE TABLE IF NOT EXISTS produtos (
-                id TEXT PRIMARY KEY CHECK(length(id) = 8),
-                codigo TEXT UNIQUE,
-                tipo TEXT,
-                quantidade INTEGER,
-                cor TEXT,
-                tamanho TEXT CHECK(length(tamanho) <= 2),
-                preco REAL,
-                descricao TEXT,
-                foto BLOB
+        if not tabela_existe("produtos"):
+            c.execute(
+                """
+                CREATE TABLE IF NOT EXISTS produtos (
+                    id TEXT PRIMARY KEY CHECK(length(id) = 8),
+                    codigo TEXT UNIQUE,
+                    tipo TEXT,
+                    quantidade INTEGER,
+                    cor TEXT,
+                    tamanho TEXT CHECK(length(tamanho) <= 2),
+                    preco REAL,
+                    descricao TEXT,
+                    foto BLOB
+                )
+                """
             )
-            """
-        )
-        # Corrigir: Remover CHECK(length(id_venda) = 8)
-        c.execute(
-            """
-            CREATE TABLE IF NOT EXISTS produtos_vendidos (
-                id_venda INTEGER PRIMARY KEY AUTOINCREMENT,
-                id TEXT,
-                codigo TEXT,
-                tipo TEXT,
-                quantidade INTEGER,
-                cor TEXT,
-                tamanho TEXT CHECK(length(tamanho) <= 2),
-                preco REAL,
-                descricao TEXT,
-                foto TEXT,
-                data_venda TEXT,
-                hora_venda TEXT
+        if not tabela_existe("produtos_vendidos"):
+            c.execute(
+                """
+                CREATE TABLE IF NOT EXISTS produtos_vendidos (
+                    id_venda INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id TEXT,
+                    codigo TEXT,
+                    tipo TEXT,
+                    quantidade INTEGER,
+                    cor TEXT,
+                    tamanho TEXT CHECK(length(tamanho) <= 2),
+                    preco REAL,
+                    descricao TEXT,
+                    foto TEXT,
+                    data_venda TEXT,
+                    hora_venda TEXT
+                )
+                """
             )
-            """
-        )
         conn.commit()
 
 
@@ -150,16 +161,18 @@ def listar_produtos_vendidos():
 def remover_produto_por_codigo(codigo):
     with closing(sqlite3.connect(DB_PATH)) as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM produtos WHERE codigo=?", (codigo,))
+        c.execute("""DELETE FROM produtos WHERE codigo=?""", (codigo,))
         conn.commit()
 
 
 def atualizar_estoque_pos_venda(cursor, produto_id, nova_quantidade):
-
-    cursor.execute(
-        "UPDATE produtos SET quantidade=? WHERE id=?",
-        (nova_quantidade, produto_id),
-    )
+    if nova_quantidade > 0:
+        cursor.execute(
+            """UPDATE produtos SET quantidade=? WHERE id=?""",
+            (nova_quantidade, produto_id),
+        )
+    else:
+        remover_produto_por_codigo(produto_id)
 
 
 def marcar_como_vendido_controller(produto, quantidade_vendida, preco_venda):
@@ -201,13 +214,9 @@ def marcar_como_vendido_controller(produto, quantidade_vendida, preco_venda):
                         ),
                     )
                     nova_quantidade = quantidade_disponivel - quantidade_vendida
-                    if nova_quantidade > 0:
-                        print(f"Nova quantidade após venda: {nova_quantidade}")
-                        atualizar_estoque_pos_venda(
-                            c, produto.get("id"), nova_quantidade
-                        )
-                    else:
-                        remover_produto_por_codigo(produto.get("codigo"))
+
+                    print(f"Nova quantidade após venda: {nova_quantidade}")
+                    atualizar_estoque_pos_venda(c, produto.get("id"), nova_quantidade)
                     conn.commit()
                     print(
                         f"Venda do produto ID {produto.get('id')} registrada com sucesso!"
