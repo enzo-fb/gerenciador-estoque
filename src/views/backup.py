@@ -19,10 +19,14 @@ def backup_view(on_voltar, on_backup, page):
         page.overlay.append(restore_picker)
 
     def selecionar_destino(e):
-        file_picker.save_file(
-            allowed_extensions=["gz"],
-            dialog_title="Escolha onde salvar o backup",
-            file_name="estoque_backup.db.gz",
+        ft.PermissionHandler.request_permissions(
+            [ft.Permission.READ_EXTERNAL_STORAGE, ft.Permission.WRITE_EXTERNAL_STORAGE],
+            on_granted=lambda: file_picker.save_file(
+                allowed_extensions=["gz"],
+                dialog_title="Escolha onde salvar o backup",
+                file_name="estoque_backup.db.gz",
+            ),
+            on_denied=lambda: status_text.update("Permissões negadas.", "#FF0000"),
         )
 
     def on_picker_result(e: ft.FilePickerResultEvent):
