@@ -113,50 +113,68 @@ def home_view(
         spacing=20,
     )
 
-    backup_fab = ft.FloatingActionButton(
+    # Botão de backup apenas ícone, posicionado no canto inferior direito
+    backup_icon_btn = ft.IconButton(
         icon=ft.Icons.BACKUP_OUTLINED,
-        bgcolor=ft.Colors.BLUE_GREY_200,
+        icon_color=ft.Colors.BLUE_GREY_700,
         tooltip="Backup",
         on_click=on_backup,
-        mini=True,
+        width=56,
+        height=56,
+        style=ft.ButtonStyle(shape=ft.CircleBorder()),
     )
 
-    tema_fab = ft.FloatingActionButton(
+    tema_icon_btn = ft.IconButton(
         icon=ft.Icons.DARK_MODE_OUTLINED,
-        bgcolor=ft.Colors.BLUE_GREY_200,
+        icon_color=ft.Colors.BLUE_GREY_700,
         tooltip="Alternar tema",
         on_click=on_tema,
-        mini=True,
+        width=56,
+        height=56,
+        style=ft.ButtonStyle(shape=ft.CircleBorder()),
     )
 
+    # Coloque os botões de tema e backup na parte superior usando uma Row antes do conteúdo principal.
     return ft.SafeArea(
-        ft.Stack(
+        ft.Column(
             [
+                ft.Row(
+                    [
+                        ft.Container(
+                            backup_icon_btn,
+                            alignment=ft.alignment.top_left,
+                            padding=ft.Padding(
+                                20, 10, 0, 0
+                            ),  # padding: left, top, right, bottom
+                        ),
+                        ft.Container(
+                            tema_icon_btn,
+                            alignment=ft.alignment.top_right,
+                            padding=ft.Padding(
+                                0, 10, 20, 0
+                            ),  # padding: left, top, right, bottom
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    vertical_alignment=ft.CrossAxisAlignment.START,
+                ),
                 ft.Container(
                     content=ft.Column(
                         [
                             ft.Image(src="splash_android.png", width=160, height=160),
                             ft.Text("Controle de Estoque", size=32, weight="bold"),
-                            ft.Container(height=20),
+                            ft.Container(height=5),  # diminui o espaço
                             button_layout,
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         expand=True,
                     ),
-                    alignment=ft.alignment.center,
-                    padding=20,
+                    alignment=ft.alignment.top_center,  # sobe o menu
+                    padding=ft.Padding(
+                        20, -45, 20, 40
+                    ),  # padding: left, top, right, bottom
                     expand=True,
-                ),
-                ft.Container(
-                    backup_fab,
-                    alignment=ft.alignment.bottom_right,
-                    padding=20,
-                ),
-                ft.Container(
-                    tema_fab,
-                    alignment=ft.alignment.bottom_left,
-                    padding=20,
                 ),
             ],
             expand=True,
