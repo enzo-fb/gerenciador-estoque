@@ -30,8 +30,9 @@ from views.confirm_sale import confirm_sale_view
 
 def main(page: ft.Page):
     # Adicione PermissionHandler ao overlay da página logo no início
-    if not any(isinstance(ctrl, ft.PermissionHandler) for ctrl in page.overlay):
-        page.overlay.append(ft.PermissionHandler())
+    permission_handler = ft.PermissionHandler()
+    if permission_handler not in page.overlay:
+        page.overlay.append(permission_handler)
 
     page.theme_mode = "system"  # Adapta ao modo do sistema
 
@@ -261,7 +262,8 @@ def main(page: ft.Page):
             backup_view(
                 on_voltar=go_to_menu,
                 on_backup=on_backup,
-                page=page,  # Passe o parâmetro page aqui!
+                page=page,
+                permission_handler=permission_handler,
             )
         )
         page.update()

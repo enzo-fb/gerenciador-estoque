@@ -5,7 +5,7 @@ import shutil
 from models.data import ULTIMO_BACKUP_PERSONALIZADO
 
 
-def backup_view(on_voltar, on_backup, page):
+def backup_view(on_voltar, on_backup, page, permission_handler):
     status_text = ft.Text("", size=16, color="#228B22")
     file_picker = ft.FilePicker()
     file_picker_result = [None]
@@ -13,8 +13,6 @@ def backup_view(on_voltar, on_backup, page):
     restore_picker = ft.FilePicker()
     restore_file_path = [None]
 
-    # Adiciona PermissionHandler ao overlay da página
-    permission_handler = ft.PermissionHandler()
     if permission_handler not in page.overlay:
         page.overlay.append(permission_handler)
     if file_picker not in page.overlay:
@@ -280,7 +278,5 @@ def backup_view(on_voltar, on_backup, page):
             restore_picker,
         ],
         expand=True,
-        alignment=ft.alignment.center,
-    )
         alignment=ft.alignment.center,
     )
