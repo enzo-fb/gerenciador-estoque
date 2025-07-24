@@ -22,21 +22,27 @@ def backup_view(on_voltar, on_backup, page, permission_handler):
 
     def check_permission(e):
         # Use STORAGE para multiplataforma, MANAGE_EXTERNAL_STORAGE só para Android 11+
-        result = permission_handler.check_permission(ft.PermissionType.STORAGE)
-        status_text.value = f"Permissão STORAGE: {result}"
+        result = permission_handler.check_permission(
+            ft.PermissionType.MANAGE_EXTERNAL_STORAGE
+        )
+        status_text.value = f"Permissão MANAGE_EXTERNAL_STORAGE: {result}"
         status_text.color = "#228B22" if result else "#FF0000"
         status_text.update()
 
     def request_permission(e):
         # Use STORAGE para multiplataforma, MANAGE_EXTERNAL_STORAGE só para Android 11+
-        result = permission_handler.request_permission(ft.PermissionType.STORAGE)
-        status_text.value = f"Solicitação de permissão STORAGE: {result}"
+        result = permission_handler.request_permission(
+            ft.PermissionType.MANAGE_EXTERNAL_STORAGE
+        )
+        status_text.value = (
+            f"Solicitação de permissão MANAGE_EXTERNAL_STORAGE: {result}"
+        )
         status_text.color = "#228B22" if result else "#FF0000"
         status_text.update()
 
     def selecionar_destino(e):
         # Solicita permissão antes de abrir o FilePicker
-        permission_handler.request_permission(ft.PermissionType.STORAGE)
+        permission_handler.request_permission(ft.PermissionType.MANAGE_EXTERNAL_STORAGE)
         file_picker.save_file(
             allowed_extensions=["gz"],
             dialog_title="Escolha onde salvar o backup",
