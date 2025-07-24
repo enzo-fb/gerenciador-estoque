@@ -41,12 +41,22 @@ def backup_view(on_voltar, on_backup, page):
     def executar_backup(e):
         destino = file_picker_result[0]
         if destino:
-            ok = on_backup(destino)
-            if ok:
-                status_text.value = "Backup realizado com sucesso!"
-                status_text.color = "#228B22"
-            else:
-                status_text.value = "Falha ao realizar backup."
+            try:
+                # Verifica se o caminho é realmente gravável no Android
+                if not os.access(os.path.dirname(destino), os.W_OK):
+                    status_text.value = "Sem permissão para salvar neste local. Escolha uma pasta como 'Downloads'."
+                    status_text.color = "#FF0000"
+                    status_text.update()
+                    return
+                ok = on_backup(destino)
+                if ok:
+                    status_text.value = "Backup realizado com sucesso!"
+                    status_text.color = "#228B22"
+                else:
+                    status_text.value = "Falha ao realizar backup."
+                    status_text.color = "#FF0000"
+            except Exception as ex:
+                status_text.value = f"Erro ao salvar backup: {ex}"
                 status_text.color = "#FF0000"
             status_text.update()
         else:
