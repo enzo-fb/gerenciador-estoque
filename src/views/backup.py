@@ -13,20 +13,40 @@ def backup_view(on_voltar, on_backup, page):
     restore_picker = ft.FilePicker()
     restore_file_path = [None]
 
+    # Adiciona PermissionHandler ao overlay da página
+    permission_handler = ft.PermissionHandler()
+    if permission_handler not in page.overlay:
+        page.overlay.append(permission_handler)
     if file_picker not in page.overlay:
         page.overlay.append(file_picker)
     if restore_picker not in page.overlay:
         page.overlay.append(restore_picker)
 
+    def check_permission(e):
+        result = permission_handler.check_permission(ft.PermissionType.STORAGE)
+        status_text.value = f"Permissão STORAGE: {result}"
+        status_text.color = "#228B22" if result else "#FF0000"
+        status_text.update()
+
+    def request_permission(e):
+        result = permission_handler.request_permission(ft.PermissionType.STORAGE)
+        status_text.value = f"Solicitação de permissão STORAGE: {result}"
+        status_text.color = "#228B22" if result else "#FF0000"
+        status_text.update()
+
+    def open_app_settings(e):
+        result = permission_handler.open_app_settings()
+        status_text.value = f"Abrindo configurações do app: {result}"
+        status_text.color = "#228B22"
+        status_text.update()
+
     def selecionar_destino(e):
-        ft.PermissionHandler.request_permissions(
-            [ft.Permission.READ_EXTERNAL_STORAGE, ft.Permission.WRITE_EXTERNAL_STORAGE],
-            on_granted=lambda: file_picker.save_file(
-                allowed_extensions=["gz"],
-                dialog_title="Escolha onde salvar o backup",
-                file_name="estoque_backup.db.gz",
-            ),
-            on_denied=lambda: status_text.update("Permissões negadas.", "#FF0000"),
+        # Solicita permissão antes de abrir o FilePicker
+        permission_handler.request_permission(ft.PermissionType.STORAGE)
+        file_picker.save_file(
+            allowed_extensions=["gz"],
+            dialog_title="Escolha onde salvar o backup",
+            file_name="estoque_backup.db.gz",
         )
 
     def on_picker_result(e: ft.FilePickerResultEvent):
@@ -46,7 +66,6 @@ def backup_view(on_voltar, on_backup, page):
         destino = file_picker_result[0]
         if destino:
             try:
-                # Verifica se o caminho é realmente gravável no Android
                 if not os.access(os.path.dirname(destino), os.W_OK):
                     status_text.value = "Sem permissão para salvar neste local. Escolha uma pasta como 'Downloads'."
                     status_text.color = "#FF0000"
@@ -178,8 +197,28 @@ def backup_view(on_voltar, on_backup, page):
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
-                                vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza verticalmente
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                 expand=True,
+                            ),
+                            ft.Row(
+                                [
+                                    ft.OutlinedButton(
+                                        "Verificar permissão",
+                                        data=ft.PermissionType.STORAGE,
+                                        on_click=check_permission,
+                                    ),
+                                    ft.OutlinedButton(
+                                        "Solicitar permissão",
+                                        data=ft.PermissionType.STORAGE,
+                                        on_click=request_permission,
+                                    ),
+                                    ft.OutlinedButton(
+                                        "Abrir configurações do app",
+                                        on_click=open_app_settings,
+                                    ),
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                spacing=10,
                             ),
                             ft.Divider(),
                             ft.Text(
@@ -209,7 +248,7 @@ def backup_view(on_voltar, on_backup, page):
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
-                                vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza verticalmente
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                 expand=True,
                             ),
                             ft.Container(height=20),
