@@ -4,6 +4,21 @@ import gzip
 import shutil
 from models.data import ULTIMO_BACKUP_PERSONALIZADO
 
+import platform
+
+
+def _get_permission_type():
+    # Android 11+ precisa MANAGE_EXTERNAL_STORAGE, outros STORAGE
+    if hasattr(ft, "Platform") and ft.Platform.ANDROID in str(
+        getattr(ft, "Platform", "")
+    ):
+        # Flet pode não ter Platform, então fallback para platform.system()
+        if "android" in platform.system().lower():
+            # Não há como saber a versão do Android aqui, então tente MANAGE_EXTERNAL_STORAGE
+            return ft.PermissionType.MANAGE_EXTERNAL_STORAGE
+    # Para desktop e outros sistemas
+    return ft.PermissionType.STORAGE
+
 
 def backup_view(on_voltar, on_backup, page, permission_handler):
     status_text = ft.Text("", size=16, color="#228B22")
@@ -21,28 +36,22 @@ def backup_view(on_voltar, on_backup, page, permission_handler):
         page.overlay.append(restore_picker)
 
     def check_permission(e):
-        # Use STORAGE para multiplataforma, MANAGE_EXTERNAL_STORAGE só para Android 11+
-        result = permission_handler.check_permission(
-            ft.PermissionType.MANAGE_EXTERNAL_STORAGE
-        )
-        status_text.value = f"Permissão MANAGE_EXTERNAL_STORAGE: {result}"
+        permission_type = _get_permission_type()
+        result = permission_handler.check_permission(permission_type)
+        status_text.value = f"Permissão {permission_type}: {result}"
         status_text.color = "#228B22" if result else "#FF0000"
         status_text.update()
 
     def request_permission(e):
-        # Use STORAGE para multiplataforma, MANAGE_EXTERNAL_STORAGE só para Android 11+
-        result = permission_handler.request_permission(
-            ft.PermissionType.MANAGE_EXTERNAL_STORAGE
-        )
-        status_text.value = (
-            f"Solicitação de permissão MANAGE_EXTERNAL_STORAGE: {result}"
-        )
+        permission_type = _get_permission_type()
+        result = permission_handler.request_permission(permission_type)
+        status_text.value = f"Solicitação de permissão {permission_type}: {result}"
         status_text.color = "#228B22" if result else "#FF0000"
         status_text.update()
 
     def selecionar_destino(e):
-        # Solicita permissão antes de abrir o FilePicker
-        permission_handler.request_permission(ft.PermissionType.MANAGE_EXTERNAL_STORAGE)
+        permission_type = _get_permission_type()
+        permission_handler.request_permission(permission_type)
         file_picker.save_file(
             allowed_extensions=["gz"],
             dialog_title="Escolha onde salvar o backup",
