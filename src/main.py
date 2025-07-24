@@ -262,6 +262,13 @@ def main(page: ft.Page):
         )
         page.update()
 
+    def alternar_tema(e=None):
+        if page.theme_mode == "light":
+            page.theme_mode = "dark"
+        else:
+            page.theme_mode = "light"
+        page.update()
+
     def go_to_menu(e=None):
         page.controls.clear()
         page.controls.append(
@@ -269,10 +276,11 @@ def main(page: ft.Page):
                 on_add_item=go_to_new_item,
                 on_remove_item=go_to_remove_item,
                 on_consult_item=go_to_consult_item,
-                on_sold_items=go_to_sold_items,  # Certifique-se de passar a função aqui
-                on_sell_item=go_to_select_for_sale,  # <-- CONECTAR FUNÇÃO
-                on_update_item=go_to_update_item,  # <-- CONECTAR FUNÇÃO
-                on_backup=go_to_backup,  # Adicione esta linha ao seu home_view
+                on_sold_items=go_to_sold_items,
+                on_sell_item=go_to_select_for_sale,
+                on_update_item=go_to_update_item,
+                on_backup=go_to_backup,
+                on_tema=alternar_tema,  # Passa a função de alternar tema
             )
         )
         page.update()

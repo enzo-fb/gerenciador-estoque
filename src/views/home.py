@@ -8,7 +8,8 @@ def home_view(
     on_sold_items=None,
     on_sell_item=None,
     on_update_item=None,
-    on_backup=None,  # Mantém o parâmetro
+    on_backup=None,
+    on_tema=None,  # Novo parâmetro para callback do tema
 ):
     """Cria a view da tela inicial com um layout de grade 2x3 manual e centralizado."""
 
@@ -112,12 +113,19 @@ def home_view(
         spacing=20,
     )
 
-    # Adiciona um botão de backup discreto no canto inferior direito
     backup_fab = ft.FloatingActionButton(
         icon=ft.Icons.BACKUP_OUTLINED,
         bgcolor=ft.Colors.BLUE_GREY_200,
         tooltip="Backup",
         on_click=on_backup,
+        mini=True,
+    )
+
+    tema_fab = ft.FloatingActionButton(
+        icon=ft.Icons.DARK_MODE_OUTLINED,
+        bgcolor=ft.Colors.BLUE_GREY_200,
+        tooltip="Alternar tema",
+        on_click=on_tema,
         mini=True,
     )
 
@@ -143,6 +151,11 @@ def home_view(
                 ft.Container(
                     backup_fab,
                     alignment=ft.alignment.bottom_right,
+                    padding=20,
+                ),
+                ft.Container(
+                    tema_fab,
+                    alignment=ft.alignment.bottom_left,
                     padding=20,
                 ),
             ],
