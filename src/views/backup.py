@@ -130,7 +130,7 @@ def backup_view(on_voltar, on_backup, page):
         [
             ft.SafeArea(
                 ft.Container(
-                    ft.Column(
+                    content=ft.Column(
                         [
                             ft.Text(
                                 "Backup do Banco de Dados",
@@ -150,21 +150,22 @@ def backup_view(on_voltar, on_backup, page):
                                         "Escolher destino...",
                                         on_click=selecionar_destino,
                                         bgcolor="#808080",
-                                        width=180,
+                                        width=150,
                                         height=45,
                                         color="#ffffff",
                                     ),
                                     ft.ElevatedButton(
                                         "Salvar Backup",
                                         on_click=executar_backup,
-                                        width=180,
+                                        width=150,
                                         height=45,
                                         bgcolor="#228B22",
                                         color="#ffffff",
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
-                                spacing=20,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza verticalmente
+                                expand=True,
                             ),
                             ft.Divider(),
                             ft.Text(
@@ -179,7 +180,7 @@ def backup_view(on_voltar, on_backup, page):
                                     ft.ElevatedButton(
                                         "Selecionar arquivo...",
                                         on_click=selecionar_backup_para_restaurar,
-                                        width=180,
+                                        width=150,
                                         height=45,
                                         bgcolor="#808080",
                                         color="#ffffff",
@@ -187,20 +188,21 @@ def backup_view(on_voltar, on_backup, page):
                                     ft.ElevatedButton(
                                         "Recuperar Backup",
                                         on_click=executar_restauracao,
-                                        width=180,
+                                        width=150,
                                         height=45,
                                         bgcolor="#3FA355",
                                         color="#ffffff",
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
-                                spacing=20,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza verticalmente
+                                expand=True,
                             ),
                             ft.Container(height=20),
                             ft.ElevatedButton(
                                 "Voltar para menu",
                                 on_click=on_voltar,
-                                width=200,
+                                width=300,
                                 height=45,
                                 bgcolor="#6495ED",
                                 color="#ffffff",
@@ -221,4 +223,5 @@ def backup_view(on_voltar, on_backup, page):
             restore_picker,
         ],
         expand=True,
+        alignment=ft.alignment.center,
     )
