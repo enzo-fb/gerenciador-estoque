@@ -29,6 +29,10 @@ from views.confirm_sale import confirm_sale_view
 
 
 def main(page: ft.Page):
+    # Adicione PermissionHandler ao overlay da página logo no início
+    if not any(isinstance(ctrl, ft.PermissionHandler) for ctrl in page.overlay):
+        page.overlay.append(ft.PermissionHandler())
+
     page.theme_mode = "system"  # Adapta ao modo do sistema
 
     # Tema claro

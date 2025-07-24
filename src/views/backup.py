@@ -23,21 +23,17 @@ def backup_view(on_voltar, on_backup, page):
         page.overlay.append(restore_picker)
 
     def check_permission(e):
+        # Use STORAGE para multiplataforma, MANAGE_EXTERNAL_STORAGE só para Android 11+
         result = permission_handler.check_permission(ft.PermissionType.STORAGE)
         status_text.value = f"Permissão STORAGE: {result}"
         status_text.color = "#228B22" if result else "#FF0000"
         status_text.update()
 
     def request_permission(e):
+        # Use STORAGE para multiplataforma, MANAGE_EXTERNAL_STORAGE só para Android 11+
         result = permission_handler.request_permission(ft.PermissionType.STORAGE)
         status_text.value = f"Solicitação de permissão STORAGE: {result}"
         status_text.color = "#228B22" if result else "#FF0000"
-        status_text.update()
-
-    def open_app_settings(e):
-        result = permission_handler.open_app_settings()
-        status_text.value = f"Abrindo configurações do app: {result}"
-        status_text.color = "#228B22"
         status_text.update()
 
     def selecionar_destino(e):
@@ -206,15 +202,23 @@ def backup_view(on_voltar, on_backup, page):
                                         "Verificar permissão",
                                         data=ft.PermissionType.STORAGE,
                                         on_click=check_permission,
+                                        width=120,
+                                        height=36,
+                                        style=ft.ButtonStyle(
+                                            padding=ft.Padding(0, 0, 0, 0),
+                                            shape=ft.RoundedRectangleBorder(radius=8),
+                                        ),
                                     ),
                                     ft.OutlinedButton(
                                         "Solicitar permissão",
                                         data=ft.PermissionType.STORAGE,
                                         on_click=request_permission,
-                                    ),
-                                    ft.OutlinedButton(
-                                        "Abrir configurações do app",
-                                        on_click=open_app_settings,
+                                        width=120,
+                                        height=36,
+                                        style=ft.ButtonStyle(
+                                            padding=ft.Padding(0, 0, 0, 0),
+                                            shape=ft.RoundedRectangleBorder(radius=8),
+                                        ),
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
@@ -276,5 +280,7 @@ def backup_view(on_voltar, on_backup, page):
             restore_picker,
         ],
         expand=True,
+        alignment=ft.alignment.center,
+    )
         alignment=ft.alignment.center,
     )
