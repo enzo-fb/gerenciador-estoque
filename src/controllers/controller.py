@@ -75,7 +75,10 @@ def inicializar_banco():
 
 def identificar_tipo_por_id(id_str):
     prefixo = id_str[:2]
-    return TIPOS_PRODUTO.get(prefixo, "DESCONHECIDO")
+    for k, v in TIPOS_PRODUTO:
+        if k == prefixo:
+            return v
+    return "DESCONHECIDO"
 
 
 def adicionar_produto_controller(produto):

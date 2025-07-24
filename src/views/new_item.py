@@ -92,6 +92,7 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
         border_color="#ffffff",  # Adicionando cor de borda
         bgcolor="#ffffff",
         label_style=ft.TextStyle(color="#808080"),  # Cor do rótulo
+        keyboard_type=ft.KeyboardType.NUMBER,
     )
     quantidade_field = ft.TextField(
         label="Quantidade",
@@ -214,9 +215,6 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
             id_field.error_text = "Digite exatamente 6 \ndígitos numéricos"
             id_field.update()
             erro = True
-        else:
-            id_field.error_text = None
-            id_field.update()
 
         # Validação dos outros campos obrigatórios
         for campo, nome in campos_obrigatorios[1:]:
@@ -232,13 +230,19 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
 
         if on_salvar:
             try:
+                # Corrige: o campo "quantidade" deve ser convertido para int, "preco" para float
                 on_salvar(
                     {
                         "id": gerar_id_completo(),
-                        "quantidade": quantidade_field.value,
+                        "codigo": gerar_id_completo(),
+                        "tipo": next(
+                            (v for k, v in TIPOS_PRODUTO if k == tipo_selector.value),
+                            "",
+                        ),
+                        "quantidade": int(quantidade_field.value or "0"),
                         "cor": cor_field.value,
                         "tamanho": tamanho_field.value,
-                        "preco": preco_field.value,
+                        "preco": float(preco_field.value or "0"),
                         "descricao": descricao_field.value,
                         "foto": foto_real_path[0],  # Salva o caminho real do arquivo
                     }
@@ -311,5 +315,3 @@ def new_item_view(on_voltar=None, on_salvar=None, on_sucesso=None):
     return ft.Stack(
         [layout, file_picker], expand=True
     )  # Adicionado expand=True no Stack
-    return ft.Stack([layout, file_picker], expand=True)
-    return ft.Stack([layout, file_picker], expand=True)
