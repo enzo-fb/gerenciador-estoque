@@ -6,15 +6,18 @@ from views.consult_item import consult_item_view
 from views.sold_item import sold_item_view
 from views.sucess import success_view
 from views.confirm import confirm_view
-from views.sell_item_view import sale_details_view  # Adicione este import
+from views.sell_item_view import sale_details_view
 from views.select_for_sale_view import select_for_sale_view
 from views.update_item_view import update_item_view
 from views.update_select_view import update_select_view
 from views.update_sucess import success_view as update_success_view
+from views.backup import backup_view
 from models.data import (
     marcar_como_vendido_controller,
     atualizar_item_controller,
-)  # Comentei/removi se não estiver em uso para src_base64
+    realizar_backup_semanal,
+    realizar_backup_personalizado,
+)
 from controllers.controller import (
     inicializar_banco,
     adicionar_produto_controller,
@@ -52,6 +55,7 @@ def main(page: ft.Page):
     )
 
     inicializar_banco()  # Inicializa/cria o banco ao iniciar o app
+    realizar_backup_semanal()
 
     def go_to_new_item(e=None):
         page.controls.clear()
@@ -244,6 +248,20 @@ def main(page: ft.Page):
 
         # A função de atualização agora não existe mais e o problema de timing é eliminado
 
+    def go_to_backup(e=None):
+        def on_backup(destino):
+            return realizar_backup_personalizado(destino)
+
+        page.controls.clear()
+        page.controls.append(
+            backup_view(
+                on_voltar=go_to_menu,
+                on_backup=on_backup,
+                page=page,  # Passe o parâmetro page aqui!
+            )
+        )
+        page.update()
+
     def go_to_menu(e=None):
         page.controls.clear()
         page.controls.append(
@@ -254,6 +272,7 @@ def main(page: ft.Page):
                 on_sold_items=go_to_sold_items,  # Certifique-se de passar a função aqui
                 on_sell_item=go_to_select_for_sale,  # <-- CONECTAR FUNÇÃO
                 on_update_item=go_to_update_item,  # <-- CONECTAR FUNÇÃO
+                on_backup=go_to_backup,  # Adicione esta linha ao seu home_view
             )
         )
         page.update()

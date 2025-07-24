@@ -162,3 +162,4 @@ cython_debug/
 # Flet
 storage/
 estoque.db
+src/models/backup_path.txt

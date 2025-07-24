@@ -2,6 +2,7 @@ import sqlite3
 from contextlib import closing
 import os
 from datetime import datetime
+import shutil
 
 try:
     from zoneinfo import ZoneInfo
@@ -92,6 +93,7 @@ def adicionar_produto(produto):
             ),
         )
         conn.commit()
+    realizar_backup()
 
 
 def listar_produtos(filtro=None, vendidos=None):
@@ -163,6 +165,7 @@ def remover_produto_por_codigo(codigo):
         c = conn.cursor()
         c.execute("""DELETE FROM produtos WHERE codigo=?""", (codigo,))
         conn.commit()
+    realizar_backup()
 
 
 def atualizar_estoque_pos_venda(cursor, produto_id, nova_quantidade):
@@ -173,6 +176,7 @@ def atualizar_estoque_pos_venda(cursor, produto_id, nova_quantidade):
         )
     else:
         remover_produto_por_codigo(produto_id)
+    realizar_backup()
 
 
 def marcar_como_vendido_controller(produto, quantidade_vendida, preco_venda):
@@ -221,6 +225,7 @@ def marcar_como_vendido_controller(produto, quantidade_vendida, preco_venda):
                     print(
                         f"Venda do produto ID {produto.get('id')} registrada com sucesso!"
                     )
+                    realizar_backup()
                     return True
             except sqlite3.OperationalError as err:
                 if "database is locked" in str(err):
@@ -295,3 +300,94 @@ def atualizar_item_controller(item):
                 ),
             )
         conn.commit()
+    realizar_backup()
+
+
+BACKUP_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "backup_path.txt")
+
+
+def _carregar_backup_personalizado():
+    if os.path.exists(BACKUP_CONFIG_PATH):
+        try:
+            with open(BACKUP_CONFIG_PATH, "r", encoding="utf-8") as f:
+                caminho = f.read().strip()
+                if caminho:
+                    return caminho
+        except Exception:
+            pass
+    return None
+
+
+def _salvar_backup_personalizado(caminho):
+    try:
+        with open(BACKUP_CONFIG_PATH, "w", encoding="utf-8") as f:
+            f.write(caminho)
+    except Exception as ex:
+        print(f"Erro ao salvar caminho do backup personalizado: {ex}")
+
+
+# Inicializa o caminho do último backup personalizado
+ULTIMO_BACKUP_PERSONALIZADO = [_carregar_backup_personalizado()]
+
+
+def realizar_backup():
+    import gzip
+
+    origem = os.path.join(os.path.dirname(__file__), "../models/estoque.db")
+    # Salva apenas no local personalizado, se definido
+    if ULTIMO_BACKUP_PERSONALIZADO[0]:
+        try:
+            with (
+                open(origem, "rb") as f_in,
+                gzip.open(ULTIMO_BACKUP_PERSONALIZADO[0], "wb") as f_out,
+            ):
+                shutil.copyfileobj(f_in, f_out)
+            return ULTIMO_BACKUP_PERSONALIZADO[0]
+        except Exception as ex:
+            print(f"Erro ao salvar backup personalizado periódico: {ex}")
+            return None
+    return None
+
+
+def realizar_backup_personalizado(destino_gz):
+    import gzip
+
+    origem = os.path.join(os.path.dirname(__file__), "../models/estoque.db")
+    try:
+        with open(origem, "rb") as f_in, gzip.open(destino_gz, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+        ULTIMO_BACKUP_PERSONALIZADO[0] = destino_gz
+        _salvar_backup_personalizado(destino_gz)
+        return True
+    except Exception as ex:
+        print(f"Erro ao salvar backup personalizado: {ex}")
+        return False
+
+
+def realizar_backup_semanal():
+    import gzip
+    from datetime import datetime
+
+    destino_base = ULTIMO_BACKUP_PERSONALIZADO[0]
+    if not destino_base:
+        print("Destino do backup semanal não definido pelo usuário.")
+        return None
+
+    base_dir = os.path.dirname(destino_base)
+    semana_str = datetime.now().strftime("%Y-%W")
+    destino = os.path.join(base_dir, f"estoque_backup_semanal_{semana_str}.db.gz")
+
+    # Só faz backup se ainda não existe para esta semana
+    if os.path.exists(destino):
+        print(f"Backup semanal já existe para esta semana: {destino}")
+        return destino
+
+    origem = os.path.join(os.path.dirname(__file__), "../models/estoque.db")
+    try:
+        with open(origem, "rb") as f_in, gzip.open(destino, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+        print(f"Backup semanal criado: {destino}")
+        return destino
+    except Exception as ex:
+        print(f"Erro ao salvar backup semanal: {ex}")
+        return None
